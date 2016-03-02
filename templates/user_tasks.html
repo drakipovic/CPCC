@@ -1,0 +1,3 @@
+{% for task in tasks %}
+	<p><a href='/task/{{task.task_id}}'>Name: {{task.name}} Created by: {{task.user.username}}</a></p>
+{% endfor %}

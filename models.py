@@ -1,5 +1,6 @@
 from main import db
 
+
 class User(db.Model):
 	__tablename__ = 'users'
 
@@ -28,8 +29,8 @@ class User(db.Model):
 
 
 contest_tasks = db.Table('contest_tasks', db.Model.metadata,
-	db.Column('contest_id', db.ForeignKey('tasks.task_id'), primary_key=True),
-	db.Column('task_id', db.ForeignKey('contests.contest_id'), primary_key=True))
+							db.Column('contest_id', db.ForeignKey('tasks.task_id'), primary_key=True),
+							db.Column('task_id', db.ForeignKey('contests.contest_id'), primary_key=True))
 
 
 class Task(db.Model):
@@ -38,12 +39,15 @@ class Task(db.Model):
 	task_id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
 	text = db.Column(db.Text)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+	user = db.relationship('User', backref=db.backref('tasks', lazy='dynamic'))
 
 	contests = db.relationship('Contest', secondary=contest_tasks, back_populates='tasks')
 
-	def __init__(self, name, text):
+	def __init__(self, name, text, user):
 		self.name = name
 		self.text = text
+		self.user = user
 
 	def __repr__(self):
 		return 'Task(%r)' % self.name 

@@ -1,11 +1,15 @@
-from flask import render_template, session, request, redirect
+from flask import render_template, session, request, redirect, g, url_for
 
 from main import app
-from models import User
+from models import User, Task
 
 
 @app.before_request
 def _before_request():
+	if session.get('logged_in'):
+		username = session['logged_in']
+		g.user = User.query.filter_by(username=username).first()
+
 	if 'register' in request.url:
 		return
 
@@ -19,7 +23,7 @@ def _before_request():
 @app.route('/')
 @app.route('/home')
 def home():
-	return render_template('home.html', username=session['logged_in'])
+	return render_template('home.html', username=g.user.username)
 
 
 @app.route('/profile/<username>')
@@ -43,11 +47,36 @@ def login():
 	return render_template('login.html')
 
 
+@app.route('/tasks/<username>')
+def user_tasks(username):
+	user = User.query.filter_by(username=username).first()
+	tasks = Task.query.filter_by(user_id=user.user_id).all()
+	return render_template('user_tasks.html', tasks=tasks)
+
+
+@app.route('/task/new', methods=['GET', 'POST'])
+def new_task():
+	if request.method == 'POST':
+		task_name = request.form['TaskName']
+		task_text = request.form['TaskText']
+		task = Task(task_name, task_text, g.user)
+		task.save()
+		return redirect(url_for('task', task_id=task.task_id))
+
+	return render_template('task_form.html')
+
+
+@app.route('/task/<task_id>', methods=['GET'])
+def task(task_id):
+	task = Task.query.get(task_id)
+	return render_template('task.html', task=task)
+
+
 @app.route('/logout', methods=['GET'])
 def logout():
 	session.pop('logged_in', None)
 	return redirect('login')
-	
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
