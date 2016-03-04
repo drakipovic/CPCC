@@ -1,0 +1,3 @@
+{% for contest in contests %}
+  <p><a href='/contest/{{contest.contest}}'>Name: {{contest.name}} Created by: {{contest.user.username}}</a></p>
+{% endfor %}

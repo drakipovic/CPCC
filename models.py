@@ -50,7 +50,7 @@ class Task(db.Model):
 		self.user = user
 
 	def __repr__(self):
-		return 'Task(%r)' % self.name 
+		return 'Task(%r)' % (self.name)
 
 	def save(self):
 		db.session.add(self)
@@ -63,14 +63,20 @@ class Contest(db.Model):
 	contest_id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
 	time = db.Column(db.DateTime())
+	duration = db.Column(db.Integer)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
 
 	tasks = db.relationship('Task', secondary=contest_tasks, back_populates='contests')
 
-	def __init__(self, name):
+	def __init__(self, name, time, duration, user):
 		self.name = name
+		self.time = time
+		self.duration = duration
+		self.user = user
 
 	def __repr__(self):
-		return 'Contest(%r)' % self.name
+		return 'Contest(%r)' % (self.name)
 
 	def save(self):
 		db.session.add(self)

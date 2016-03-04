@@ -1,7 +1,7 @@
 from flask import render_template, session, request, redirect, g, url_for
 
 from main import app
-from models import User, Task
+from models import User, Task, Contest
 
 
 @app.before_request
@@ -70,6 +70,34 @@ def new_task():
 def task(task_id):
 	task = Task.query.get(task_id)
 	return render_template('task.html', task=task)
+
+
+@app.route('/contests/<username>')
+def user_contests(username):
+	user = User.query.filter_by(username=username).first()
+	contests = Contest.query.filter_by(user_id=user.user_id).all()
+	return render_template('user_contests.html', contests=contests)
+
+
+@app.route('/contest/new', methods=['GET', 'POST'])
+def new_contest():
+	if request.method == 'POST': 
+		#contest_name = request.form['ContestName']
+		#contest_time = request.form['ContestTime']
+		#contest_duration = request.form['ContestDuration']
+		#contest = Contest(contest_name, contest_time, contest_duration, g.user)
+		#contest.save()
+		#return redirect(url_for('contest', contest_id=contest.contest_id))
+		return render_template('home.html')
+	
+	return render_template('contest_form.html')
+
+
+
+@app.route('/contest/<contest_id>', methods=['GET'])
+def contest(contest_id):
+	contest = Contest.query.get(contest_id)
+	return render_template('contest.html', contest=contest)
 
 
 @app.route('/logout', methods=['GET'])

@@ -1,2 +1,2 @@
 # CPCC
-Competative Programming Contest Creator
+Competitive Programming Contest Creator
