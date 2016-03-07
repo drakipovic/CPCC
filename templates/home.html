@@ -1,5 +1,10 @@
-<h1> Welcome to Competitive Programming Contest Creator </h1>
+{% extends 'base.html' %}
 
-<p>Hello, {{username}} Go to your <a href='/profile/{{username}}'>profile</a></p>
+{% block content %}
 
-<p><a href='/logout'>Logout</a></p>
+<div class="container">
+	<div class="well">
+		<h1>Welcome to Competitive Programming Contest Creator</h1>
+	</div>
+</div>
+{% endblock %}

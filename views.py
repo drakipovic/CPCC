@@ -26,10 +26,9 @@ def home():
 	return render_template('home.html', username=g.user.username)
 
 
-@app.route('/profile/<username>')
-def profile(username):
-	user = User.query.filter_by(username=username).first()
-	return render_template('profile.html', user=user)
+@app.route('/profile')
+def profile():
+	return render_template('profile.html', user=g.user)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -57,8 +56,8 @@ def user_tasks(username):
 @app.route('/task/new', methods=['GET', 'POST'])
 def new_task():
 	if request.method == 'POST':
-		task_name = request.form['TaskName']
-		task_text = request.form['TaskText']
+		task_name = request.form['inputTaskName']
+		task_text = request.form['inputTaskText']
 		task = Task(task_name, task_text, g.user)
 		task.save()
 		return redirect(url_for('task', task_id=task.task_id))
