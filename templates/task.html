@@ -1,2 +1,10 @@
-<h1>{{task.name}}</h1>
-<textarea readonly rows="10" cols="30">{{task.text}}</textarea>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+	<div class="well">
+		<h1>{{task.name}}</h1>
+		{{task.text}}
+	</div>
+</div>
+{% endblock %}

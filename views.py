@@ -2,6 +2,7 @@ from flask import render_template, session, request, redirect, g, url_for
 
 from main import app
 from models import User, Task, Contest
+from forms import TaskForm, ContestForm
 
 
 @app.before_request
@@ -28,7 +29,11 @@ def home():
 
 @app.route('/profile')
 def profile():
-	return render_template('profile.html', user=g.user)
+	user = g.user
+	username = user.username
+	tasks = Task.query.filter_by(user_id=user.user_id).all()
+	contests = Contest.query.filter_by(user_id=user.user_id).all()
+	return render_template('profile.html', user=user, tasks=tasks, contests=contests)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -55,14 +60,13 @@ def user_tasks(username):
 
 @app.route('/task/new', methods=['GET', 'POST'])
 def new_task():
-	if request.method == 'POST':
-		task_name = request.form['inputTaskName']
-		task_text = request.form['inputTaskText']
-		task = Task(task_name, task_text, g.user)
+	task_form = TaskForm(request.form)
+	if request.method == 'POST' and task_form.validate():
+		task = Task(task_form.task_name.data, task_form.task_text.data, g.user)
 		task.save()
 		return redirect(url_for('task', task_id=task.task_id))
 
-	return render_template('task_form.html')
+	return render_template('task_form.html', form=task_form)
 
 
 @app.route('/task/<task_id>', methods=['GET'])
@@ -80,16 +84,15 @@ def user_contests(username):
 
 @app.route('/contest/new', methods=['GET', 'POST'])
 def new_contest():
-	if request.method == 'POST': 
-		#contest_name = request.form['ContestName']
-		#contest_time = request.form['ContestTime']
-		#contest_duration = request.form['ContestDuration']
-		#contest = Contest(contest_name, contest_time, contest_duration, g.user)
-		#contest.save()
-		#return redirect(url_for('contest', contest_id=contest.contest_id))
+	contest_form = ContestForm(request.form)
+	if request.method == 'POST' and contest_form.validate(): 
+
+		contest = Contest(contest_form.contest_name.data, contest_form.contest_start.data, 2, g.user)
+		contest.save()
+		return redirect(url_for('contest', contest_id=contest.contest_id))
 		return render_template('home.html')
 	
-	return render_template('contest_form.html')
+	return render_template('contest_form.html', form=contest_form)
 
 
 

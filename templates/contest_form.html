@@ -1,6 +1,41 @@
-<form class="form-contest" method="post">
-    <h2 class="form-contest-heading">Create new contest</h2>
-    <p><label for="inputContestName" class="sr-only">Name</label>
-    <input type="text" name="ContestName" class="form-control"></p>
-    <p><button class="btn btn-lg btn-primary btn-block" type="submit">Save</button></p>
-</form>
+{% extends 'base.html' %}
+{% from '_formhelpers.html' import render_field %}
+{% block content %}
+
+<div class="row">
+	<div class="col-md-1"></div>
+    <div class="col-md-6">
+        <div class="well bs-component">
+			<form class="form-horizontal uni" method="post">
+				<fieldset>
+				    <legend>Create new contest</legend>
+					{% for field in form %}
+						{{ render_field(field) }}
+					{% endfor %}
+    				<div class="form-group">
+      					<div class="col-md-10 col-md-offset-2">
+      						<button type="submit" class="btn btn-info">Submit</button>
+        					<button type="reset" class="btn btn-default">Cancel</button>
+      					</div>
+    				</div>
+			    </fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block page_js %}
+
+<script type="text/javascript">
+    $(window).ready(function(){
+        $('input#contest_start').datepicker({
+            weekStart: 1,
+            autoclose: true,
+            format: 'yyyy-mm-dd',
+        });
+    });
+</script>
+
+{% endblock %}

@@ -11,13 +11,19 @@
 	<div class="row">
 		<div class="col-md-6">
 			<div class="well">
-				<h4>Tasks</h4>
+				<h4>My Tasks</h4>
+				{% for task in tasks %}
+					<p><a href="task/{{task.task_id}}">{{task.name}}</a></p>
+				{% endfor %}
 				<p><a class="btn btn-info" href="/task/new" role="button">New task</a></p>
 			</div>
 		</div>
 		<div class="col-md-6">
 			<div class="well">
-				<h4>Contests</h4>
+				<h4>My Contests</h4>
+				{% for contest in contests %}
+					<p><a href="contest/{{contest.contest_id}}">{{contest.name}}</a></p>
+				{% endfor %}
 				<p><a class="btn btn-info" href="/contest/new" role="button">New contest</a></p>
 			</div>
 		</div>

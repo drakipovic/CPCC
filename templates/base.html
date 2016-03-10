@@ -3,8 +3,9 @@
 <head>
 	<meta charset="utf-8">
 	<link type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='datepicker/css/datepicker.css') }}">
 
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
 </head>
 	
 <body>
@@ -17,7 +18,7 @@
         	<div id="navbar" class="navbar-collapse collapse">
         		<ul class="nav navbar-nav">
             		<li id="profile"><a href="/profile">Profile</a></li>
-            		<li id="contests"><a href="/contests">Compete</a></li>
+            		<li id="contests"><a href="/compete">Compete</a></li>
             		<li id="about"><a href="/about">About</a></li>
           		</ul>
           		<ul class="nav navbar-nav navbar-right">
@@ -31,13 +32,16 @@
 	{% block content %}
 	{% endblock %}
 
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>	
-
+	<script src="{{ url_for('static', filename='datepicker/js/bootstrap-datepicker.js') }}"></script>
+	
 	<script type="text/javascript">
 		$(function(){
 			$(".alert").alert()
 			var loc = window.location.pathname;
 			var path = loc.substring(1);
+			if(path.indexOf('/') >= 0) return;
 			if(path == ""){
 				$("ul.nav > li#home").addClass("active");
 			}
