@@ -15,7 +15,9 @@
 				{% for task in tasks %}
 					<p><a href="task/{{task.task_id}}">{{task.name}}</a></p>
 				{% endfor %}
-				<p><a class="btn btn-info" href="/task/new" role="button">New task</a></p>
+				<a class="btn btn-warning" href="/task/new" role="button">
+					Task <span class="glyphicon glyphicon-plus"></span>
+				</a>
 			</div>
 		</div>
 		<div class="col-md-6">
@@ -24,7 +26,9 @@
 				{% for contest in contests %}
 					<p><a href="contest/{{contest.contest_id}}">{{contest.name}}</a></p>
 				{% endfor %}
-				<p><a class="btn btn-info" href="/contest/new" role="button">New contest</a></p>
+				<a class="btn btn-warning" href="/contest/new" role="button">
+					Contest <span class="glyphicon glyphicon-plus"></span>
+				</a>
 			</div>
 		</div>
 	</div>

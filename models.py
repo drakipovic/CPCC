@@ -69,11 +69,12 @@ class Contest(db.Model):
 	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
 	tasks = db.relationship('Task', secondary=contest_tasks, back_populates='contests')
 
-	def __init__(self, name, time, duration, user):
+	def __init__(self, name, time, duration, user, tasks):
 		self.name = name
 		self.time = time
 		self.duration = duration
 		self.user = user
+		self.tasks = tasks
 
 	def __repr__(self):
 		return 'Contest(%r)' % (self.name)

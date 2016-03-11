@@ -90,10 +90,10 @@ def new_contest():
 	contest_form.contest_tasks.choices = [(task.task_id, task.name) for task in tasks]
 
 	if request.method == 'POST' and contest_form.validate(): 
-		contest = Contest(contest_form.contest_name.data, contest_form.contest_start.data, contest_form.contest_duration.data, g.user)
+		contest = Contest(contest_form.contest_name.data, contest_form.contest_start.data, 
+							contest_form.contest_duration.data, g.user, contest_form.contest_tasks.data)
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
-		return render_template('home.html')
 	
 	return render_template('contest_form.html', form=contest_form)
 
