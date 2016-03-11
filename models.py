@@ -40,8 +40,8 @@ class Task(db.Model):
 	name = db.Column(db.String(50))
 	text = db.Column(db.Text)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-	user = db.relationship('User', backref=db.backref('tasks', lazy='dynamic'))
 
+	user = db.relationship('User', backref=db.backref('tasks', lazy='dynamic'))
 	contests = db.relationship('Contest', secondary=contest_tasks, back_populates='tasks')
 
 	def __init__(self, name, text, user):
@@ -65,8 +65,8 @@ class Contest(db.Model):
 	time = db.Column(db.DateTime())
 	duration = db.Column(db.Integer)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
 
+	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
 	tasks = db.relationship('Task', secondary=contest_tasks, back_populates='contests')
 
 	def __init__(self, name, time, duration, user):
