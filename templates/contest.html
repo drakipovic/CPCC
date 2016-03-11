@@ -1,3 +1,15 @@
-<h1>{{contest.name}}</h1>
-<p>Time: {{contest.time}}</p>
-<p>Duration: {{contest.duration}}</p>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="well">
+    <h1>{{contest.name}}</h1>
+    <p>Time: {{contest.time}}</p>
+    <p>Duration: {{contest.duration}} h</p>
+    <p>Tasks:</p> 
+    {% for task in tasks %}
+      <p><a href="/task/{{task.task_id}}">{{task.name}}</a></p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

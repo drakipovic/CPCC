@@ -1,7 +1,7 @@
 from flask import render_template, session, request, redirect, g, url_for
 
 from main import app
-from models import User, Task, Contest
+from models import User, Task, Contest, Contest_Task
 from forms import TaskForm, ContestForm
 
 
@@ -102,7 +102,9 @@ def new_contest():
 @app.route('/contest/<contest_id>', methods=['GET'])
 def contest(contest_id):
 	contest = Contest.query.get(contest_id)
-	return render_template('contest.html', contest=contest)
+	contest_tasks = Contest_Task.query.filter_by(contest_id=contest_id).all()
+	tasks = [Task.query.get(contest_task.task_id) for contest_task in contest_tasks]
+	return render_template('contest.html', contest=contest, tasks=tasks)
 
 
 @app.route('/logout', methods=['GET'])

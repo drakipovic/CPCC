@@ -28,11 +28,6 @@ class User(db.Model):
 		db.session.commit()
 
 
-contest_tasks = db.Table('contest_tasks', db.Model.metadata,
-							db.Column('contest_id', db.ForeignKey('tasks.task_id'), primary_key=True),
-							db.Column('task_id', db.ForeignKey('contests.contest_id'), primary_key=True))
-
-
 class Task(db.Model):
 	__tablename__ = 'tasks'
 
@@ -42,7 +37,7 @@ class Task(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
 	user = db.relationship('User', backref=db.backref('tasks', lazy='dynamic'))
-	contests = db.relationship('Contest', secondary=contest_tasks, back_populates='tasks')
+	#contests = db.relationship('Contest', secondary=contest_task, back_populates='tasks')
 
 	def __init__(self, name, text, user):
 		self.name = name
@@ -67,7 +62,7 @@ class Contest(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
 	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
-	tasks = db.relationship('Task', secondary=contest_tasks, back_populates='contests')
+	#tasks = db.relationship('Task', secondary=contest_task, back_populates='contests')
 
 	def __init__(self, name, time, duration, user, tasks):
 		self.name = name
@@ -78,6 +73,27 @@ class Contest(db.Model):
 
 	def __repr__(self):
 		return 'Contest(%r)' % (self.name)
+
+	def save(self):
+		db.session.add(self)
+		db.session.commit()
+		for task_id in self.tasks:
+			contest_task = Contest_Task(self.contest_id, task_id)
+			contest_task.save()
+
+
+class Contest_Task(db.Model):
+	__tablename__ = 'contest_tasks'
+
+	contest_id = db.Column(db.Integer, primary_key=True)
+	task_id = db.Column(db.Integer, primary_key=True)
+
+	def __init__(self, contest_id, task_id):
+		self.contest_id = contest_id
+		self.task_id = task_id
+
+	def __repr__(self):
+		return 'Contest_Task(%r, %r)' % (self.contest_id, self.task_id)
 
 	def save(self):
 		db.session.add(self)
