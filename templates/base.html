@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<link type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-	<link rel="stylesheet" href="{{ url_for('static', filename='datepicker/css/datepicker.css') }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.css">
 
 
 </head>
@@ -32,10 +32,12 @@
 	{% block content %}
 	{% endblock %}
 
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>	
-	<script src="{{ url_for('static', filename='datepicker/js/bootstrap-datepicker.js') }}"></script>
-	
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>	
+
+
 	<script type="text/javascript">
 		$(function(){
 			$(".alert").alert()

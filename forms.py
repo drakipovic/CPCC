@@ -1,4 +1,4 @@
-from wtforms import Form, TextAreaField, TextField, validators, DateField
+from wtforms import Form, TextAreaField, TextField, validators, DateTimeField
 
 class TaskForm(Form):
 	task_name = TextField('Task Name', [validators.Required()])
@@ -7,4 +7,4 @@ class TaskForm(Form):
 
 class ContestForm(Form):
 	contest_name = TextField('Contest Name', [validators.Required()])
-	contest_start = DateField('Contest Start')
+	contest_start = DateTimeField('Contest Start')
