@@ -50,8 +50,8 @@ def user(username):
 	return render_template('user.html', user=user)
 
 
-@app.route('/friend/<friend_id>')
-def friend(friend_id):
+@app.route('/add_friend/<friend_id>')
+def add_friend(friend_id):
 	user = g.user
 	if friend_id == user.user_id:
 		return redirect('/profile')
