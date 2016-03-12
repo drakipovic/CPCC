@@ -1,8 +1,14 @@
 from flask import render_template, session, request, redirect, g, url_for
+import pycountry
 
 from main import app
+<<<<<<< 1f1d5759ff14384856f6f57993f2042a923d1657
 from models import User, Task, Contest, Contest_Task, Friendship
 from forms import TaskForm, ContestForm
+=======
+from models import User, Task, Contest, Contest_Task
+from forms import TaskForm, ContestForm, MemberForm
+>>>>>>> Added flags, member form, added css to login and register pages
 
 
 @app.before_request
@@ -24,7 +30,7 @@ def _before_request():
 @app.route('/')
 @app.route('/home')
 def home():
-	return render_template('home.html', username=g.user.username)
+	return render_template('home.html')
 
 
 @app.route('/profile')
@@ -35,21 +41,24 @@ def profile():
 	friends = [User.query.get(f.friend_id) for f in friendships]
 	tasks = Task.query.filter_by(user_id=user.user_id).all()
 	contests = Contest.query.filter_by(user_id=user.user_id).all()
-	return render_template('profile.html', user=user, friends=friends, tasks=tasks, contests=contests)
+	country_code = pycountry.countries.get(name=user.country).alpha2.lower()
+	return render_template('profile.html', user=user, tasks=tasks, contests=contests, country=user.country, country_code=country_code)
+
 
 @app.route('/user/<username>')
 def user(username):
-	if (username == g.user.username):
+	if username == g.user.username:
 		return redirect('/profile')
 	user = User.query.filter_by(username=username).first()
-	if (user == None): 
+	if user == None: 
 		return redirect('/home')
 	return render_template('user.html', user=user)
+
 
 @app.route('/friend/<friend_id>')
 def friend(friend_id):
 	user = g.user
-	if (friend_id == user.user_id):
+	if friend_id == user.user_id:
 		return redirect('/profile')
 	friendship = Friendship.query.filter_by(user_id=user.user_id, friend_id=friend_id).first()
 	if friendship == None:
@@ -60,8 +69,8 @@ def friend(friend_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if request.method == 'POST':
-		username = request.form['Username']
-		password = request.form['Password']
+		username = request.form['inputUsername']
+		password = request.form['inputPassword']
 		user = User.query.filter_by(username=username, password=password).first()
 		if user is None:
 			return redirect('/login')
@@ -70,6 +79,23 @@ def login():
 			return redirect('/home')
 	
 	return render_template('login.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+	member_form = MemberForm(request.form)
+	if request.method == 'POST' and member_form.validate():
+		username = member_form.username.data
+		password = member_form.password.data
+		name = member_form.name.data
+		surname = member_form.surname.data
+		e_mail = member_form.e_mail.data
+		country = member_form.country.data
+		user = User(username, password, name, surname, e_mail, country)
+		user.save()
+		return redirect('/login')
+
+	return render_template('register.html', form=member_form)
 
 
 @app.route('/tasks/<username>')
@@ -119,7 +145,6 @@ def new_contest():
 	return render_template('contest_form.html', form=contest_form)
 
 
-
 @app.route('/contest/<contest_id>', methods=['GET'])
 def contest(contest_id):
 	contest = Contest.query.get(contest_id)
@@ -132,19 +157,3 @@ def contest(contest_id):
 def logout():
 	session.pop('logged_in', None)
 	return redirect('login')
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-	if request.method == 'POST':
-		username = request.form['Username']
-		password = request.form['Password']
-		name = request.form['Name']
-		surname = request.form['Surname']
-		e_mail = request.form['EMail']
-		country = request.form['Country']
-		user = User(username, password, name, surname, e_mail, country)
-		user.save()
-		return redirect('/login')
-
-	return render_template('register.html')

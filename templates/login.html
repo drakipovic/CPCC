@@ -1,10 +1,35 @@
-<form class="form-signin" method="post" action="/login">
-    <h2 class="form-signin-heading">Login</h2>
-    <label for="inputUsername" class="sr-only">Username</label>
-    <input type="text" name="Username" class="form-control" placeholder="Username">
-    <label for="inputPassword" class="sr-only">Password</label>
-    <input type="password" name="Password" class="form-control" placeholder="Password">
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
-</form>
+<title>Login</title>
+<head>
+	<link type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+</head>
 
-<p>Do you have a profile? No? <a href='/register'>Register</a></p>
+<div class="row" style="margin-top: 40px">
+	<div class="col-md-4"></div>
+	<div class="col-md-4">
+		<div class="well">
+			<form class="form-horizontal" method="post">
+			    <legend>Login</legend>
+			    <fieldset>
+				    <div class="form-group">
+				    	<label for="inputUsername" class="col-md-3 control-label">Username</label>
+				      	<div class="col-md-9">
+				        	<input type="text" class="form-control" name="inputUsername" placeholder="Username">
+				      	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label for="inputPassword" class="col-md-3 control-label">Password</label>
+				      	<div class="col-md-9">
+				        	<input type="password" class="form-control" name="inputPassword" placeholder="Password">
+				    	</div>
+				    </div>
+				    <div class="form-group">
+	      				<div class="col-md-9 col-md-offset-3">
+	        				<button type="submit" class="btn btn-info">Login</button>
+	      				</div>
+    				</div>
+			    </fieldset>
+			</form>
+			<p>Do you have a profile? No? <a href='/register'>Register</a></p>
+		</div>
+	</div>
+</div>

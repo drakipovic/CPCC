@@ -3,10 +3,14 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h1>{{user.name}} {{user.surname}}</h1>
+		<legend>
+			<h1>
+				<span title="{{country}}" id="flag" class="img-rounded flag-icon flag-icon-{{country_code}}"></span> 
+				 {{user.name}} {{user.surname}}
+			</h1>
+		</legend>
 		<h4>Username: {{user.username}}</h4>
 		<h4>Mail: {{user.e_mail}}</h4>
-		<h4>Country: {{user.country}}</h4>
 		<h4>Friends: 
 			{% for friend in friends %}
 				<a href="/user/{{friend.username}}">{{friend.username}}</a>
@@ -38,4 +42,16 @@
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block page_js %}
+
+<script>
+	$(function(){
+		$('span#flag').tooltip({
+			placement: "top"
+		});
+	});
+</script>
+
 {% endblock %}

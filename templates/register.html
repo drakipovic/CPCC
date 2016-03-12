@@ -1,16 +1,28 @@
-<form class="form-signin" method="post" action="/register">
-    <h2 class="form-signin-heading">Register</h2>
-    <p><label for="inputUsername" class="sr-only">Username</label>
-    <input type="text" name="Username" class="form-control" placeholder="Username"></p>
-    <label for="inputPassword" class="sr-only">Password</label>
-    <input type="password" name="Password" class="form-control" placeholder="Password">
-    <p><label for="inputName" class="sr-only">Name</label>
-    <input type="text" name="Name" class="form-control" placeholder="Name"></p>
-    <p><label for="inputSurname" class="sr-only">Surname</label>
-    <input type="text" name="Surname" class="form-control" placeholder="Surname"></p>
-    <p><label for="inputEMail" class="sr-only">e-mail</label>
-    <input type="text" name="EMail" class="form-control" placeholder="EMail"></p>
-    <p><label for="inputCountry" class="sr-only">Country</label>
-    <input type="text" name="Country" class="form-control" placeholder="Country"></p>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
-</form>
+{% from '_formhelpers.html' import render_field %}
+
+<title>Register</title>
+<head>
+    <link type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+</head>
+
+<div class="row" style="margin-top: 40px">
+    <div class="col-md-3"></div>
+    <div class="col-md-5">
+        <div class="well">
+            <form class="form-horizontal" method="post">
+                <legend>Register</legend>
+                <fieldset>
+                    {% for field in form %}
+                        {{ render_field(field) }}
+                    {% endfor %}
+                    <div class="form-group">
+                        <div class="col-md-10 col-md-offset-2">
+                            <button type="submit" class="btn btn-info">Submit</button>
+                            <a class="btn btn-default" href="/login" type="button">Cancel</a>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
