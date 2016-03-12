@@ -2,25 +2,11 @@
 
 {% block content %}
 <div class="container">
-	<div class="well">
-		<legend>
-			<h1>
-				<span title="{{country}}" id="flag" class="img-rounded flag-icon flag-icon-{{country_code}}"></span> 
-				 {{user.name}} {{user.surname}}
-			</h1>
-		</legend>
-		<h4>Username: {{user.username}}</h4>
-		<h4>Mail: {{user.e_mail}}</h4>
-		<h4>Friends: 
-			{% for friend in friends %}
-				<a href="/profile/{{friend.username}}">{{friend.username}}</a>
-			{% endfor %}
-		</h4>
-	</div>
+	{% include 'profile_elements.html' %}
 	<div class="row">
 		<div class="col-md-6">
 			<div class="well">
-				<h4>My Tasks</h4>
+				<legend>My Tasks</legend>
 				{% for task in tasks %}
 					<p><a href="task/{{task.task_id}}">{{task.name}}</a></p>
 				{% endfor %}
@@ -31,7 +17,7 @@
 		</div>
 		<div class="col-md-6">
 			<div class="well">
-				<h4>My Contests</h4>
+				<legend>My Contests</legend>
 				{% for contest in contests %}
 					<p><a href="contest/{{contest.contest_id}}">{{contest.name}}</a></p>
 				{% endfor %}

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<link type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-	<link type="text/css" href="{{ url_for('static', filename='css/flag-icon.min.css') }}" rel="stylesheet">
+	<link type="text/css" href="{{ url_for('static', filename='css/flag-icon.css') }}" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.css">
 </head>
 	
@@ -21,6 +21,12 @@
             		<li id="contests"><a href="/compete">Compete</a></li>
             		<li id="about"><a href="/about">About</a></li>
           		</ul>
+          		<form class="navbar-form navbar-left" role="search">
+		        	<div class="form-group has-feedback">
+		          		<input type="text" class="form-control" placeholder="Search Tasks, Contests or Users" style="width: 275px" />
+		          		<i class="glyphicon glyphicon-search form-control-feedback"></i>
+		        	</div>
+		      	</form>
           		<ul class="nav navbar-nav navbar-right">
           			<li id="logout"><a href="/logout">Logout</a></li>
           		</ul>

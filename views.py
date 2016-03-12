@@ -31,34 +31,47 @@ def home():
 @app.route('/profile')
 def profile():
 	user = g.user
-	username = user.username
 	friendships = Friendship.query.filter_by(user_id=user.user_id).all()
 	friends = [User.query.get(f.friend_id) for f in friendships]
 	tasks = Task.query.filter_by(user_id=user.user_id).all()
 	contests = Contest.query.filter_by(user_id=user.user_id).all()
 	country_code = pycountry.countries.get(name=user.country).alpha2.lower()
-	return render_template('profile.html', user=user, tasks=tasks, contests=contests, country=user.country, country_code=country_code, friends=friends)
+	if user.username == 'katarina': country_code='rm'
+	return render_template('my_profile.html', user=user, tasks=tasks, contests=contests, country=user.country, country_code=country_code, friends=friends)
 
 
 @app.route('/profile/<username>')
-def user(username):
+def other_profile(username):
 	if username == g.user.username:
 		return redirect('/profile')
-	user = User.query.filter_by(username=username).first()
-	if user == None: 
+
+	other_user = User.query.filter_by(username=username).first()
+	if other_user == None: 
 		return redirect('/home')
-	return render_template('user.html', user=user)
+
+	user = g.user
+	my_friendships = Friendship.query.filter_by(user_id=user.user_id).all()
+	my_friends = [User.query.get(f.friend_id) for f in my_friendships]
+
+	is_friend = False
+	if other_user in my_friends:
+		is_friend = True
+
+	friendships = Friendship.query.filter_by(user_id=other_user.user_id).all()
+	friends = [User.query.get(f.friend_id) for f in friendships]
+	country_code = pycountry.countries.get(name=other_user.country).alpha2.lower()
+	if username == 'katarina': country_code='rm'
+	return render_template('other_profile.html', user=g.user, other_user=other_user, country=other_user.country,
+							country_code=country_code, friends=friends, is_friend=is_friend)
 
 
 @app.route('/add_friend/<friend_id>')
 def add_friend(friend_id):
 	user = g.user
-	if friend_id == user.user_id:
-		return redirect('/profile')
-	friendship = Friendship.query.filter_by(user_id=user.user_id, friend_id=friend_id).first()
-	if friendship == None:
-		user.add_friend(friend_id)
-	return redirect('/profile')
+	user.add_friend(friend_id)
+	friend_username = User.query.filter_by(user_id=friend_id).first().username
+	print friend_username
+	return redirect('/profile/' + friend_username)
 
 
 @app.route('/login', methods=['GET', 'POST'])

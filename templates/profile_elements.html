@@ -1,0 +1,39 @@
+<div class="row">
+	<div class="col-md-8">
+		<div class="well">
+			{% if other_user %}
+				<legend><h1>
+					<span title="{{country}}" id="flag" class="img-rounded flag-icon flag-icon-{{country_code}}"></span> 
+					 {{other_user.name}} {{other_user.surname}}
+					{% if is_friend %}
+						<span class="label label-warning" style="float: right; font-size: 18px">Friends</span>
+					{% else %}
+						<a class="btn btn-warning" href="/add_friend/{{other_user.user_id}}" role="button" style="float: right">
+						Add friend <span class="glyphicon glyphicon-plus"></span></a>
+					{% endif %}
+				</h1></legend>
+				<h4>Username: {{other_user.username}}</h4>
+				<h4>Mail: {{other_user.e_mail}}</h4>
+			{% else %}
+				<legend><h1>
+					<span title="{{country}}" id="flag" class="img-rounded flag-icon flag-icon-{{country_code}}"></span> 
+					 {{user.name}} {{user.surname}}
+				</h1></legend>
+				<h4>Username: {{user.username}}</h4>
+				<h4>Mail: {{user.e_mail}}</h4>
+			{% endif %}
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-warning">
+				<div class="panel-heading">
+				<h3 class="panel-title">Friends</h3>
+				</div>
+				<div class="panel-body">
+					{% for friend in friends %}
+						<p><a href="/profile/{{friend.username}}">{{friend.username}}</a></p>
+				{% endfor %}
+				</div>
+		</div>
+	</div>	
+</div>
