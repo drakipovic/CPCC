@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="well">
+    <h1>{{user.name}} {{user.surname}}</h1>
+    <h4>Username: {{user.username}}</h4>
+    <h4>Mail: {{user.e_mail}}</h4>
+    <h4>Country: {{user.country}}</h4>
+    <h4><a href="/friend/{{user.user_id}}">Add friend</h4>
+  </div>
+{% endblock %}

@@ -7,6 +7,11 @@
 		<h4>Username: {{user.username}}</h4>
 		<h4>Mail: {{user.e_mail}}</h4>
 		<h4>Country: {{user.country}}</h4>
+		<h4>Friends: 
+			{% for friend in friends %}
+				<a href="/user/{{friend.username}}">{{friend.username}}</a>
+			{% endfor %}
+		</h4>
 	</div>
 	<div class="row">
 		<div class="col-md-6">

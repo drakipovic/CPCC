@@ -1,7 +1,7 @@
 from flask import render_template, session, request, redirect, g, url_for
 
 from main import app
-from models import User, Task, Contest, Contest_Task
+from models import User, Task, Contest, Contest_Task, Friendship
 from forms import TaskForm, ContestForm
 
 
@@ -31,9 +31,30 @@ def home():
 def profile():
 	user = g.user
 	username = user.username
+	friendships = Friendship.query.filter_by(user_id=user.user_id).all()
+	friends = [User.query.get(f.friend_id) for f in friendships]
 	tasks = Task.query.filter_by(user_id=user.user_id).all()
 	contests = Contest.query.filter_by(user_id=user.user_id).all()
-	return render_template('profile.html', user=user, tasks=tasks, contests=contests)
+	return render_template('profile.html', user=user, friends=friends, tasks=tasks, contests=contests)
+
+@app.route('/user/<username>')
+def user(username):
+	if (username == g.user.username):
+		return redirect('/profile')
+	user = User.query.filter_by(username=username).first()
+	if (user == None): 
+		return redirect('/home')
+	return render_template('user.html', user=user)
+
+@app.route('/friend/<friend_id>')
+def friend(friend_id):
+	user = g.user
+	if (friend_id == user.user_id):
+		return redirect('/profile')
+	friendship = Friendship.query.filter_by(user_id=user.user_id, friend_id=friend_id).first()
+	if friendship == None:
+		user.add_friend(friend_id)
+	return redirect('/profile')
 
 
 @app.route('/login', methods=['GET', 'POST'])
