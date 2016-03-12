@@ -2,13 +2,8 @@ from flask import render_template, session, request, redirect, g, url_for
 import pycountry
 
 from main import app
-<<<<<<< 1f1d5759ff14384856f6f57993f2042a923d1657
 from models import User, Task, Contest, Contest_Task, Friendship
-from forms import TaskForm, ContestForm
-=======
-from models import User, Task, Contest, Contest_Task
 from forms import TaskForm, ContestForm, MemberForm
->>>>>>> Added flags, member form, added css to login and register pages
 
 
 @app.before_request
@@ -42,10 +37,10 @@ def profile():
 	tasks = Task.query.filter_by(user_id=user.user_id).all()
 	contests = Contest.query.filter_by(user_id=user.user_id).all()
 	country_code = pycountry.countries.get(name=user.country).alpha2.lower()
-	return render_template('profile.html', user=user, tasks=tasks, contests=contests, country=user.country, country_code=country_code)
+	return render_template('profile.html', user=user, tasks=tasks, contests=contests, country=user.country, country_code=country_code, friends=friends)
 
 
-@app.route('/user/<username>')
+@app.route('/profile/<username>')
 def user(username):
 	if username == g.user.username:
 		return redirect('/profile')
