@@ -10,7 +10,12 @@
         <div class="well">
 			<form class="form-horizontal" method="post">
 				<fieldset>
-				    <legend>Create new task</legend>
+					{% if edit %}
+						<legend>Edit task</legend>
+					{% else %}
+				    	<legend>Create new task</legend>
+					{% endif %}
+					
 					{% for field in form %}
 						{{ render_field(field) }}
 					{% endfor %}

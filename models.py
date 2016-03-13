@@ -28,8 +28,8 @@ class User(db.Model):
 		db.session.commit()
 
 	def add_friend(self, friend_id):
-		friendhip = Friendship(self.user_id, friend_id)
-		friendhip.save()
+		friendship = Friendship(self.user_id, friend_id)
+		friendship.save()
 
 
 class Friendship(db.Model):
@@ -78,7 +78,7 @@ class Contest(db.Model):
 
 	contest_id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
-	time = db.Column(db.DateTime())
+	start = db.Column(db.DateTime())
 	duration = db.Column(db.Integer)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 

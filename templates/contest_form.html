@@ -3,23 +3,23 @@
 {% block content %}
 
 <div class="row">
-	<div class="col-md-1"></div>
-    <div class="col-md-6">
-        <div class="well bs-component">
-			<form class="form-horizontal uni" method="post">
-				<fieldset>
-				    <legend>Create new contest</legend>
-					{% for field in form %}
-						{{ render_field(field) }}
-					{% endfor %}
-    				<div class="form-group">
-      					<div class="col-md-10 col-md-offset-2">
-      						<button type="submit" class="btn btn-info">Submit</button>
-        					<a class="btn btn-default" type="button" href="/profile">Cancel</a>
-      					</div>
-    				</div>
-			    </fieldset>
-			</form>
+    <div class="col-md-1"></div>
+        <div class="col-md-6">
+            <div class="well bs-component">
+			    <form class="form-horizontal uni" method="post">
+				    <fieldset>
+    			        <legend>Create new contest</legend>
+    				    {% for field in form %}
+    				        {{ render_field(field) }}
+    				    {% endfor %}
+      				    <div class="form-group">
+        				    <div class="col-md-10 col-md-offset-2">
+        						<button type="submit" class="btn btn-info">Submit</button>
+          					<a class="btn btn-default" type="button" href="/profile">Cancel</a>
+        				</div>
+			        </fieldset>
+			    </form>
+            </div>
 		</div>
 	</div>
 </div>

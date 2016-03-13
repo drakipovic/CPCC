@@ -3,8 +3,17 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h1>{{task.name}}</h1>
+		<legend><h1>
+			{{task.name}}
+			{% if user.username == task.user.username %}
+				<a class="btn btn-warning" href="{{task.task_id}}/edit" role="button" style="float: right">
+					Edit <span class="glyphicon glyphicon-edit"></span></a>
+			{% endif %}
+		</h1></legend>
 		{{task.text}}
+
+		<hr>
+		<h4>Author: <a href="/profile/{{task.user.username}}">{{task.user.username}}</a></h4>
 	</div>
 </div>
 {% endblock %}

@@ -70,7 +70,6 @@ def add_friend(friend_id):
 	user = g.user
 	user.add_friend(friend_id)
 	friend_username = User.query.filter_by(user_id=friend_id).first().username
-	print friend_username
 	return redirect('/profile/' + friend_username)
 
 
@@ -115,19 +114,37 @@ def user_tasks(username):
 
 @app.route('/task/new', methods=['GET', 'POST'])
 def new_task():
-	task_form = TaskForm(request.form)
-	if request.method == 'POST' and task_form.validate():
-		task = Task(task_form.task_name.data, task_form.task_text.data, g.user)
+	form = TaskForm(request.form)
+	if request.method == 'POST' and form.validate():
+		task = Task(form.name.data, form.text.data, g.user)
 		task.save()
 		return redirect(url_for('task', task_id=task.task_id))
 
-	return render_template('task_form.html', form=task_form)
+	return render_template('task_form.html', form=form)
 
 
-@app.route('/task/<task_id>', methods=['GET'])
+@app.route('/task/<int:task_id>', methods=['GET'])
 def task(task_id):
 	task = Task.query.get(task_id)
-	return render_template('task.html', task=task)
+	if task == None:
+		return "Nema tog zadatka"
+	return render_template('task.html', user=g.user, task=task)
+
+
+@app.route('/task/<int:task_id>/edit', methods=['GET', 'POST'])
+def edit_task(task_id):
+	task = Task.query.get(task_id)
+	if g.user != task.user:
+		return "Nemas to pravo"
+
+	form = TaskForm(obj=task)
+	if request.method == 'POST' and form.validate():
+		form = TaskForm(request.form)
+		form.populate_obj(task)
+		task.save()
+		return redirect(url_for('task', task_id=task.task_id))
+
+	return render_template('task_form.html', form=form, edit=True)
 
 
 @app.route('/contests/<username>')
@@ -139,18 +156,17 @@ def user_contests(username):
 
 @app.route('/contest/new', methods=['GET', 'POST'])
 def new_contest():
-	contest_form = ContestForm(request.form)
+	form = ContestForm(request.form)
 	user = g.user
 	tasks = Task.query.filter_by(user_id=user.user_id).all()
-	contest_form.contest_tasks.choices = [(task.task_id, task.name) for task in tasks]
+	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
 
 	if request.method == 'POST' and contest_form.validate(): 
-		contest = Contest(contest_form.contest_name.data, contest_form.contest_start.data, 
-							contest_form.contest_duration.data, g.user, contest_form.contest_tasks.data)
+		contest = Contest(form.name.data, form.start.data, form.duration.data, g.user, form.tasks.data)
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
 	
-	return render_template('contest_form.html', form=contest_form)
+	return render_template('contest_form.html', form=form)
 
 
 @app.route('/contest/<contest_id>', methods=['GET'])
