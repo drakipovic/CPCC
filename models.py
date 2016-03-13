@@ -84,9 +84,9 @@ class Contest(db.Model):
 
 	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
 
-	def __init__(self, name, time, duration, user, tasks):
+	def __init__(self, name, start, duration, user, tasks):
 		self.name = name
-		self.time = time
+		self.start = start
 		self.duration = duration
 		self.user = user
 		self.tasks = tasks

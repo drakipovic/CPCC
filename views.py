@@ -161,8 +161,10 @@ def new_contest():
 	tasks = Task.query.filter_by(user_id=user.user_id).all()
 	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
 
-	if request.method == 'POST' and contest_form.validate(): 
+	if request.method == 'POST' and form.validate():
+		print form.start.data 
 		contest = Contest(form.name.data, form.start.data, form.duration.data, g.user, form.tasks.data)
+		print contest.start
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
 	
