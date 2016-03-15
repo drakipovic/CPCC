@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, g, url_for
 import pycountry
 
 from main import app
-from models import User, Task, Contest, Contest_Task, Friendship
+from models import User, Task, Contest, Friendship
 from forms import TaskForm, ContestForm, MemberForm
 
 
@@ -162,21 +162,47 @@ def new_contest():
 	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
 
 	if request.method == 'POST' and form.validate():
-		print form.start.data 
-		contest = Contest(form.name.data, form.start.data, form.duration.data, g.user, form.tasks.data)
-		print contest.start
+		tasks = [Task.query.get(task_id) for task_id in form.tasks.data]
+		contest = Contest(form.name.data, form.start.data, form.duration.data, g.user, tasks)
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
 	
 	return render_template('contest_form.html', form=form)
 
 
-@app.route('/contest/<contest_id>', methods=['GET'])
+@app.route('/contest/<int:contest_id>')
 def contest(contest_id):
 	contest = Contest.query.get(contest_id)
-	contest_tasks = Contest_Task.query.filter_by(contest_id=contest_id).all()
-	tasks = [Task.query.get(contest_task.task_id) for contest_task in contest_tasks]
-	return render_template('contest.html', contest=contest, tasks=tasks)
+	return render_template('contest.html', contest=contest, user=g.user)
+
+
+@app.route('/contest/<int:contest_id>/edit', methods=['GET', 'POST'])
+def edit_contest(contest_id):
+	contest = Contest.query.get(contest_id)
+	if g.user != contest.user:
+		return "Nemas to pravo"
+
+	form = ContestForm(obj=contest)
+	tasks = Task.query.filter_by(user_id=g.user.user_id).all()
+	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
+
+	if request.method == 'POST' and form.validate():
+		form = ContestForm(request.form)
+		tasks = [Task.query.get(task_id) for task_id in form.tasks.data]
+		form.tasks.data = tasks
+		form.populate_obj(contest)
+		contest.save()
+		return redirect(url_for('contest', contest_id=contest.contest_id))
+
+	return render_template('contest_form.html', form=form, edit=True)
+
+
+@app.route('/search/<search_query>')
+def search(search_query):
+	tasks = Task.query.filter(Task.name.contains(search_query)).all()
+	users = User.query.filter(User.username.contains(search_query)).all()
+	contests = Contest.query.filter(Contest.name.contains(search_query)).all()
+	return render_template('search_results.html', tasks=tasks, users=users, contests=contests)
 
 
 @app.route('/logout', methods=['GET'])

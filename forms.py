@@ -1,6 +1,6 @@
 import pycountry
 from wtforms import Form, TextAreaField, TextField, validators, DateTimeField, IntegerField, SelectMultipleField, SelectField, PasswordField
-
+from models import Task
 
 class MemberForm(Form):
 	username = TextField('Username', [validators.Required()])

@@ -2,15 +2,21 @@
 
 {% block content %}
 <div class="container">
-  <div class="well">
-    <h1>{{contest.name}}</h1>
-    <p>Start: {{contest.start}}</p>
-    <p>Duration: {{contest.duration}} h</p>
-    <p>Tasks: 
-      {% for task in tasks %}
-        <a href="/task/{{task.task_id}}">{{task.name}}</a>
-      {% endfor %}
-    </p>
-  </div>
+    <div class="well">
+        <legend><h1>
+        {{contest.name}}
+        {% if user.username == contest.user.username %}
+            <a class="btn btn-warning" href="{{contest.contest_id}}/edit" role="button" style="float: right">
+             Edit <span class="glyphicon glyphicon-edit"></span></a>
+        {% endif %}
+        </h1></legend>
+        <p>Start: {{contest.start}}</p>
+        <p>Duration: {{contest.duration}} h</p>
+        <p>Tasks: 
+            {% for task in contest.tasks %}
+                <a href="/task/{{task.task_id}}">{{task.name}}</a>
+            {% endfor %}
+        </p>
+    </div>
 </div>
 {% endblock %}

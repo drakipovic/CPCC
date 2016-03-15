@@ -50,6 +50,11 @@ class Friendship(db.Model):
 		db.session.commit()
 
 
+contest_tasks = db.Table('contest_tasks', db.Column('contest_id', db.Integer, db.ForeignKey('contests.contest_id')),
+											db.Column(('task_id'), db.Integer, db.ForeignKey('tasks.task_id'))
+)
+
+
 class Task(db.Model):
 	__tablename__ = 'tasks'
 
@@ -83,6 +88,7 @@ class Contest(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
 	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
+	tasks = db.relationship('Task', secondary=contest_tasks)
 
 	def __init__(self, name, start, duration, user, tasks):
 		self.name = name
@@ -93,27 +99,6 @@ class Contest(db.Model):
 
 	def __repr__(self):
 		return 'Contest(%r)' % (self.name)
-
-	def save(self):
-		db.session.add(self)
-		db.session.commit()
-		for task_id in self.tasks:
-			contest_task = Contest_Task(self.contest_id, task_id)
-			contest_task.save()
-
-
-class Contest_Task(db.Model):
-	__tablename__ = 'contest_tasks'
-
-	contest_id = db.Column(db.Integer, primary_key=True)
-	task_id = db.Column(db.Integer, primary_key=True)
-
-	def __init__(self, contest_id, task_id):
-		self.contest_id = contest_id
-		self.task_id = task_id
-
-	def __repr__(self):
-		return 'Contest_Task(%r, %r)' % (self.contest_id, self.task_id)
 
 	def save(self):
 		db.session.add(self)

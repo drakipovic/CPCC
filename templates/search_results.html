@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+	{% if users %}
+		<div class="row">
+			<div class="well">
+				<legend>Users</legend>
+				{% for user in users %}
+					<p><a href="/profile/{{ user.username }}">{{ user.username }}</a></p>
+				{% endfor %}
+			</div>
+		</div>
+	{% endif %}
+
+	{% if contests %}
+		<div class="row">
+			<div class="well">
+				<legend>Contests</legend>
+				{% for contest in contests %}
+					<p><a href="/contest/{{ contest.contest_id }}">{{ contest.name }}</a></p>
+				{% endfor %}
+			</div>
+		</div>
+	{% endif %}
+
+	{% if tasks %}
+		<div class="row">
+			<div class="well">
+				<legend>Tasks</legend>
+				{% for task in tasks %}
+					<p><a href="/task/{{ task.task_id }}">{{ task.name }}</a></p>
+				{% endfor %}
+			</div>
+		</div>
+	{% endif %}
+	
+</div>
+
+{% endblock %}
