@@ -3,7 +3,7 @@ import pycountry
 
 from main import app
 from models import User, Task, Contest, Friendship
-from forms import TaskForm, ContestForm, MemberForm
+from forms import TaskForm, ContestForm, MemberForm, InviteForm
 
 
 @app.before_request
@@ -33,11 +33,17 @@ def profile():
 	user = g.user
 	friendships = Friendship.query.filter_by(user_id=user.user_id).all()
 	friends = [User.query.get(f.friend_id) for f in friendships]
-	tasks = Task.query.filter_by(user_id=user.user_id).all()
-	contests = Contest.query.filter_by(user_id=user.user_id).all()
+	tasks = Task.query.filter_by(author_id=user.user_id).all()
+	contests = Contest.query.filter_by(author_id=user.user_id).all()
 	country_code = pycountry.countries.get(name=user.country).alpha2.lower()
 	if user.username == 'katarina': country_code='rm'
 	return render_template('my_profile.html', user=user, tasks=tasks, contests=contests, country=user.country, country_code=country_code, friends=friends)
+
+
+@app.route('/compete')
+def compete(): 
+	contests = [Contest.query.get(contest.contest_id) for contest in g.user.contests]
+	return render_template('compete.html', contests=contests)
 
 
 @app.route('/profile/<username>')
@@ -108,7 +114,7 @@ def register():
 @app.route('/tasks/<username>')
 def user_tasks(username):
 	user = User.query.filter_by(username=username).first()
-	tasks = Task.query.filter_by(user_id=user.user_id).all()
+	tasks = Task.query.filter_by(author_id=user.user_id).all()
 	return render_template('user_tasks.html', tasks=tasks)
 
 
@@ -134,7 +140,7 @@ def task(task_id):
 @app.route('/task/<int:task_id>/edit', methods=['GET', 'POST'])
 def edit_task(task_id):
 	task = Task.query.get(task_id)
-	if g.user != task.user:
+	if g.user.user_id != task.author_id:
 		return "Nemas to pravo"
 
 	form = TaskForm(obj=task)
@@ -150,7 +156,7 @@ def edit_task(task_id):
 @app.route('/contests/<username>')
 def user_contests(username):
 	user = User.query.filter_by(username=username).first()
-	contests = Contest.query.filter_by(user_id=user.user_id).all()
+	contests = Contest.query.filter_by(author_id=user.user_id).all()
 	return render_template('user_contests.html', contests=contests)
 
 
@@ -158,12 +164,12 @@ def user_contests(username):
 def new_contest():
 	form = ContestForm(request.form)
 	user = g.user
-	tasks = Task.query.filter_by(user_id=user.user_id).all()
+	tasks = Task.query.filter_by(author_id=user.user_id).all()
 	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
 
 	if request.method == 'POST' and form.validate():
 		tasks = [Task.query.get(task_id) for task_id in form.tasks.data]
-		contest = Contest(form.name.data, form.start.data, form.duration.data, g.user, tasks)
+		contest = Contest(form.name.data, form.start.data, form.duration.data, user.user_id, tasks)
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
 	
@@ -176,14 +182,36 @@ def contest(contest_id):
 	return render_template('contest.html', contest=contest, user=g.user)
 
 
+@app.route('/contest/<int:contest_id>/invite', methods=['GET', 'POST'])
+def contest_invite(contest_id):
+	contest = Contest.query.get(contest_id)
+	if g.user.user_id != contest.author_id:
+		return "Nemas to pravo"
+
+	form = InviteForm(obj=contest)
+	friendships = Friendship.query.filter_by(user_id=g.user.user_id).all()
+	users = [User.query.get(friendship.friend_id) for friendship in friendships]
+	form.users.choices = [(user.user_id, user.username) for user in users]
+
+	if request.method == 'POST' and form.validate():
+		form = InviteForm(request.form)
+		users = [User.query.get(user_id) for user_id in form.users.data]
+		form.users.data = users
+		form.populate_obj(contest)
+		contest.save()
+		return redirect(url_for('contest', contest_id=contest.contest_id))
+
+	return render_template('invite_form.html', form=form, edit=True)
+
+
 @app.route('/contest/<int:contest_id>/edit', methods=['GET', 'POST'])
 def edit_contest(contest_id):
 	contest = Contest.query.get(contest_id)
-	if g.user != contest.user:
+	if g.user.user_id != contest.author_id:
 		return "Nemas to pravo"
 
 	form = ContestForm(obj=contest)
-	tasks = Task.query.filter_by(user_id=g.user.user_id).all()
+	tasks = Task.query.filter_by(author_id=g.user.user_id).all()
 	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
 
 	if request.method == 'POST' and form.validate():

@@ -1,5 +1,10 @@
 from main import db
 
+contest_users = db.Table('contest_users', 
+											db.Column('contest_id', db.Integer, db.ForeignKey('contests.contest_id'), primary_key=True),
+											db.Column('user_id', db.Integer, db.ForeignKey('users.user_id'), primary_key=True)
+)
+
 
 class User(db.Model):
 	__tablename__ = 'users'
@@ -11,6 +16,8 @@ class User(db.Model):
 	surname = db.Column(db.String(200))
 	e_mail = db.Column(db.String(50))
 	country = db.Column(db.String(50))
+	
+	contests = db.relationship('Contest', secondary=contest_users, lazy='dynamic')
 
 	def __init__(self, username, password, name, surname, e_mail, country):
 		self.username = username
@@ -50,8 +57,9 @@ class Friendship(db.Model):
 		db.session.commit()
 
 
-contest_tasks = db.Table('contest_tasks', db.Column('contest_id', db.Integer, db.ForeignKey('contests.contest_id')),
-											db.Column(('task_id'), db.Integer, db.ForeignKey('tasks.task_id'))
+contest_tasks = db.Table('contest_tasks', 
+											db.Column('contest_id', db.Integer, db.ForeignKey('contests.contest_id')),
+											db.Column('task_id', db.Integer, db.ForeignKey('tasks.task_id'))
 )
 
 
@@ -61,14 +69,14 @@ class Task(db.Model):
 	task_id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
 	text = db.Column(db.Text)
-	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+	author_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
-	user = db.relationship('User', backref=db.backref('tasks', lazy='dynamic'))
+	author = db.relationship('User', backref='tasks')
 
-	def __init__(self, name, text, user):
+	def __init__(self, name, text, author):
 		self.name = name
 		self.text = text
-		self.user = user
+		self.author = author
 
 	def __repr__(self):
 		return 'Task(%r)' % (self.name)
@@ -85,16 +93,16 @@ class Contest(db.Model):
 	name = db.Column(db.String(50))
 	start = db.Column(db.DateTime())
 	duration = db.Column(db.Integer)
-	user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+	author_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
-	user = db.relationship('User', backref=db.backref('contests', lazy='dynamic'))
-	tasks = db.relationship('Task', secondary=contest_tasks)
+	tasks = db.relationship('Task', secondary=contest_tasks, lazy='dynamic')
+	users = db.relationship('User', secondary=contest_users, lazy='dynamic')
 
-	def __init__(self, name, start, duration, user, tasks):
+	def __init__(self, name, start, duration, author_id, tasks):
 		self.name = name
 		self.start = start
 		self.duration = duration
-		self.user = user
+		self.author_id = author_id
 		self.tasks = tasks
 
 	def __repr__(self):

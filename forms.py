@@ -21,3 +21,7 @@ class ContestForm(Form):
 	start = DateTimeField('Start')
 	duration = SelectField('Duration', choices=[(i, str(i)+'h') for i in range(1, 24)], coerce=int)
 	tasks = SelectMultipleField('Tasks', coerce=int)
+
+
+class InviteForm(Form):
+	users = SelectMultipleField('Users', coerce=int)

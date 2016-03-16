@@ -5,8 +5,10 @@
     <div class="well">
         <legend><h1>
         {{contest.name}}
-        {% if user.username == contest.user.username %}
-            <a class="btn btn-warning" href="{{contest.contest_id}}/edit" role="button" style="float: right">
+        {% if user.user_id == contest.author_id %}
+            <a class="btn btn-warning" href="{{contest.contest_id}}/invite" role="button" style="float: right"> 
+             Invite friends <span class="glyphicon glyphicon-user"></span></a>  
+            <a class="btn btn-warning" href="{{contest.contest_id}}/edit" role="button" style="float: right; margin-right: 10px">
              Edit <span class="glyphicon glyphicon-edit"></span></a>
         {% endif %}
         </h1></legend>

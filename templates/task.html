@@ -5,15 +5,14 @@
 	<div class="well">
 		<legend><h1>
 			{{task.name}}
-			{% if user.username == task.user.username %}
+			{% if user.user_id == task.author.user_id %}
 				<a class="btn btn-warning" href="{{task.task_id}}/edit" role="button" style="float: right">
 					Edit <span class="glyphicon glyphicon-edit"></span></a>
 			{% endif %}
 		</h1></legend>
 		{{task.text}}
 
-		<hr>
-		<h4>Author: <a href="/profile/{{task.user.username}}">{{task.user.username}}</a></h4>
+		<h4>Author: <a href="/profile/{{task.author.username}}">{{task.author.username}}</a></h4>
 	</div>
 </div>
 {% endblock %}

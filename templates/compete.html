@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="well">
+        <p>Contests:
+            {% for contest in contests %}
+                <a href="/contest/{{contest.contest_id}}">{{contest.name}}</a>
+            {% endfor %}
+        </p>
+    </div>
+</div>
+{% endblock %}
