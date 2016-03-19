@@ -1,8 +1,8 @@
-from flask import render_template, session, request, redirect, g, url_for
+from flask import render_template, session, request, redirect, g, url_for, flash
 import pycountry
 
 from main import app
-from models import User, Task, Contest, Friendship
+from models import User, Task, Contest, Friendship, ContestNotification
 from forms import TaskForm, ContestForm, MemberForm, InviteForm
 
 
@@ -11,6 +11,7 @@ def _before_request():
 	if session.get('logged_in'):
 		username = session['logged_in']
 		g.user = User.query.filter_by(username=username).first()
+		return
 
 	if 'register' in request.url:
 		return
@@ -19,7 +20,13 @@ def _before_request():
 		return
 
 	if 'logged_in' not in session and 'login' not in request.url:
+		flash("You have to login to see this content!", 'danger')
 		return redirect('/login')
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template('404.html'), 404
 
 
 @app.route('/')
@@ -86,6 +93,7 @@ def login():
 		password = request.form['inputPassword']
 		user = User.query.filter_by(username=username, password=password).first()
 		if user is None:
+			flash("Warning! Wrong username or password.", 'danger')
 			return redirect('/login')
 		else:
 			session['logged_in'] = username
@@ -106,6 +114,7 @@ def register():
 		country = member_form.country.data
 		user = User(username, password, name, surname, e_mail, country)
 		user.save()
+		flash('You were succesfully registered. Please login.', 'success')
 		return redirect('/login')
 
 	return render_template('register.html', form=member_form)
@@ -141,7 +150,8 @@ def task(task_id):
 def edit_task(task_id):
 	task = Task.query.get(task_id)
 	if g.user.user_id != task.author_id:
-		return "Nemas to pravo"
+		flash('You do not have proper authorization to do this!', 'danger')
+		return redirect('/task/' + str(task_id))
 
 	form = TaskForm(obj=task)
 	if request.method == 'POST' and form.validate():
@@ -179,14 +189,16 @@ def new_contest():
 @app.route('/contest/<int:contest_id>')
 def contest(contest_id):
 	contest = Contest.query.get(contest_id)
-	return render_template('contest.html', contest=contest, user=g.user)
+	author = User.query.get(contest.author_id)
+	return render_template('contest.html', contest=contest, user=g.user, author=author)
 
 
 @app.route('/contest/<int:contest_id>/invite', methods=['GET', 'POST'])
 def contest_invite(contest_id):
 	contest = Contest.query.get(contest_id)
 	if g.user.user_id != contest.author_id:
-		return "Nemas to pravo"
+		flash('You do not have proper authorization to do this!', 'danger')
+		return redirect('/contest/' + str(contest_id))
 
 	form = InviteForm(obj=contest)
 	friendships = Friendship.query.filter_by(user_id=g.user.user_id).all()
@@ -208,7 +220,8 @@ def contest_invite(contest_id):
 def edit_contest(contest_id):
 	contest = Contest.query.get(contest_id)
 	if g.user.user_id != contest.author_id:
-		return "Nemas to pravo"
+		flash('You do not have proper authorization to do this!', 'danger')
+		return redirect('/contest/' + str(contest_id))
 
 	form = ContestForm(obj=contest)
 	tasks = Task.query.filter_by(author_id=g.user.user_id).all()

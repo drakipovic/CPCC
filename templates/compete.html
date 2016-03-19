@@ -3,11 +3,31 @@
 {% block content %}
 <div class="container">
     <div class="well">
-        <p>Contests:
-            {% for contest in contests %}
-                <a href="/contest/{{contest.contest_id}}">{{contest.name}}</a>
-            {% endfor %}
-        </p>
+    	<legend>Invited to contests</legend>
+    	<table class="table table-striped table-hover" style="background: white">
+    		<thead>
+        		<tr>
+        			<th>#</th>
+        			<th>Name</th>
+        			<th>Start</th>
+        			<th>Duration</th>
+        			<th>Task number</th>
+        			<th>Invited users</th>
+        		</tr>
+        	</thead>
+        	<tbody>
+		        {% for contest in contests %}
+		           	<tr>
+		                <td><a href="/contest/{{contest.contest_id}}">{{contest.contest_id}}</a></td>
+		                <td>{{contest.name}}</td>
+		                <td>{{contest.start}}</td>
+		                <td>{{contest.duration}}h</td>
+		                <td>{{contest.tasks.count()}}</td>
+		                <td>{{contest.users.count()}}</td>
+		            </tr>
+		        {% endfor %}
+			</tbody>
+		</table>
     </div>
 </div>
 {% endblock %}

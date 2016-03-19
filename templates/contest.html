@@ -2,23 +2,67 @@
 
 {% block content %}
 <div class="container">
-    <div class="well">
-        <legend><h1>
-        {{contest.name}}
-        {% if user.user_id == contest.author_id %}
-            <a class="btn btn-warning" href="{{contest.contest_id}}/invite" role="button" style="float: right"> 
-             Invite friends <span class="glyphicon glyphicon-user"></span></a>  
-            <a class="btn btn-warning" href="{{contest.contest_id}}/edit" role="button" style="float: right; margin-right: 10px">
-             Edit <span class="glyphicon glyphicon-edit"></span></a>
-        {% endif %}
-        </h1></legend>
-        <p>Start: {{contest.start}}</p>
-        <p>Duration: {{contest.duration}} h</p>
-        <p>Tasks: 
-            {% for task in contest.tasks %}
-                <a href="/task/{{task.task_id}}">{{task.name}}</a>
-            {% endfor %}
-        </p>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="well">
+                <legend><h1>
+                {{contest.name}}
+                {% if user.user_id == contest.author_id %}
+                    <a class="btn btn-warning" href="{{contest.contest_id}}/invite" role="button" style="float: right"> 
+                     Invite friends <span class="glyphicon glyphicon-user"></span></a>  
+                    <a class="btn btn-warning" href="{{contest.contest_id}}/edit" role="button" style="float: right; margin-right: 10px">
+                     Edit <span class="glyphicon glyphicon-edit"></span></a>
+                {% endif %}
+                </h1></legend>
+                <strong><h4>Contest info</h4></strong>
+                <p>Start: {{contest.start}}</p>
+                <p>Duration: {{contest.duration}} h</p>
+                <hr>
+                Author: <a href="/profile/{{author.username}}">{{author.username}}</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="well">
+                    <legend>Tasks</legend>
+                    <table class="table table-bordered table-hover" style="background: white">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in contest.tasks %}
+                                <tr>
+                                    <td><a href="/task/{{task.task_id}}">{{task.task_id}}</a></td>
+                                    <td>{{task.name}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="well">
+                 <legend>Users invited</legend>
+                    <table class="table table-bordered table-hover" style="background: white">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in contest.users %}
+                                <tr>
+                                    <td><a href="/profile/{{user.username}}">{{user.username}}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

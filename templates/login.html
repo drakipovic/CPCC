@@ -13,15 +13,16 @@
 				    <div class="form-group has-feedback">
 				    	<label for="inputUsername" class="col-md-3 control-label">Username</label>
 				      	<div class="col-md-9">
-				    		<i class="glyphicon glyphicon-user form-control-feedback"></i>
 				        	<input type="text" class="form-control" name="inputUsername" placeholder="Username">
+				        	<i class="glyphicon glyphicon-user form-control-feedback"></i>
 				      	</div>
 				      	
 				    </div>
-				    <div class="form-group">
+				    <div class="form-group has-feedback">
 				    	<label for="inputPassword" class="col-md-3 control-label">Password</label>
 				      	<div class="col-md-9">
 				        	<input type="password" class="form-control" name="inputPassword" placeholder="Password">
+				        	<i class="glyphicon glyphicon-lock form-control-feedback"></i>
 				    	</div>
 				    </div>
 				    <div class="form-group">
@@ -32,6 +33,15 @@
 			    </fieldset>
 			</form>
 			<p>Do you have a profile? No? <a href='/register'>Register</a></p>
+			{% with messages = get_flashed_messages(with_categories=True) %}
+		        {% if messages %}
+			        {% for category, message in messages %}
+			          	<div class="alert alert-{{category}}" style="text-align: center">
+			            	{{ message }}
+			          	</div>
+			        {% endfor %}
+		       {% endif %}
+    		{% endwith %}
 		</div>
 	</div>
 </div>
