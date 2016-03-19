@@ -8,8 +8,6 @@
                 <legend><h1>
                 {{contest.name}}
                 {% if user.user_id == contest.author_id %}
-                    <a class="btn btn-warning" href="{{contest.contest_id}}/invite" role="button" style="float: right"> 
-                     Invite friends <span class="glyphicon glyphicon-user"></span></a>  
                     <a class="btn btn-warning" href="{{contest.contest_id}}/edit" role="button" style="float: right; margin-right: 10px">
                      Edit <span class="glyphicon glyphicon-edit"></span></a>
                 {% endif %}
@@ -24,7 +22,13 @@
         <div class="col-md-4">
             <div class="row">
                 <div class="well">
-                    <legend>Tasks</legend>
+                    <legend><h2>
+                        Tasks
+                        {% if user.user_id == contest.author_id %}
+                            <a class="btn btn-warning" href="{{contest.contest_id}}/add_task" role="button" style="float: right"> 
+                            Add tasks <span class="glyphicon glyphicon-plus"></span></a>  
+                        {% endif %}
+                    </h2></legend>
                     <table class="table table-bordered table-hover" style="background: white">
                         <thead>
                             <tr>
@@ -45,7 +49,13 @@
             </div>
             <div class="row">
                 <div class="well">
-                 <legend>Users invited</legend>
+                    <legend><h2>
+                        Users invited
+                        {% if user.user_id == contest.author_id %}
+                            <a class="btn btn-warning" href="{{contest.contest_id}}/invite" role="button" style="float: right"> 
+                            Invite friends <span class="glyphicon glyphicon-user"></span></a>
+                        {% endif %}
+                    </h2></legend>
                     <table class="table table-bordered table-hover" style="background: white">
                         <thead>
                             <tr>
