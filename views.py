@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, g, url_for, flash
 import pycountry
 
 from main import app
-from models import User, Task, Contest, Friendship, ContestNotification
+from models import User, Task, Contest, Friendship
 from forms import TaskForm, ContestForm, MemberForm, InviteForm
 
 
