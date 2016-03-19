@@ -19,7 +19,10 @@ class TaskForm(Form):
 class ContestForm(Form):
 	name = TextField('Name', [validators.Required()])
 	start = DateTimeField('Start')
-	duration = SelectField('Duration', choices=[(i, str(i)+'h') for i in range(1, 24)], coerce=int)
+	duration = SelectField('Duration', choices=[(i, str(i)+'h') for i in range(1, 24+1)], coerce=int)
+
+
+class SelectTasksForm(Form):
 	tasks = SelectMultipleField('Tasks', coerce=int)
 
 

@@ -3,7 +3,7 @@ import pycountry
 
 from main import app
 from models import User, Task, Contest, Friendship
-from forms import TaskForm, ContestForm, MemberForm, InviteForm
+from forms import TaskForm, ContestForm, MemberForm, InviteForm, SelectTasksForm
 
 
 @app.before_request
@@ -173,13 +173,9 @@ def user_contests(username):
 @app.route('/contest/new', methods=['GET', 'POST'])
 def new_contest():
 	form = ContestForm(request.form)
-	user = g.user
-	tasks = Task.query.filter_by(author_id=user.user_id).all()
-	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
 
 	if request.method == 'POST' and form.validate():
-		tasks = [Task.query.get(task_id) for task_id in form.tasks.data]
-		contest = Contest(form.name.data, form.start.data, form.duration.data, user.user_id, tasks)
+		contest = Contest(form.name.data, form.start.data, form.duration.data, g.user.user_id)
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
 	
@@ -207,8 +203,9 @@ def contest_invite(contest_id):
 
 	if request.method == 'POST' and form.validate():
 		form = InviteForm(request.form)
-		users = [User.query.get(user_id) for user_id in form.users.data]
-		form.users.data = users
+		if form.users.data == None: form.users.data = []
+		else: form.users.data = [User.query.get(user_id) for user_id in form.users.data]
+
 		form.populate_obj(contest)
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
@@ -224,18 +221,31 @@ def edit_contest(contest_id):
 		return redirect('/contest/' + str(contest_id))
 
 	form = ContestForm(obj=contest)
-	tasks = Task.query.filter_by(author_id=g.user.user_id).all()
-	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
 
 	if request.method == 'POST' and form.validate():
 		form = ContestForm(request.form)
-		tasks = [Task.query.get(task_id) for task_id in form.tasks.data]
-		form.tasks.data = tasks
 		form.populate_obj(contest)
 		contest.save()
 		return redirect(url_for('contest', contest_id=contest.contest_id))
 
 	return render_template('contest_form.html', form=form, edit=True)
+
+
+@app.route('/contest/<int:contest_id>/select_tasks', methods=['GET', 'POST'])
+def select_tasks(contest_id):
+	form = SelectTasksForm(request.form)
+	tasks = Task.query.filter_by(author_id=g.user.user_id).all()
+	form.tasks.choices = [(task.task_id, task.name) for task in tasks]
+
+	if request.method == 'POST' and form.validate():
+		if form.tasks.data == None: tasks = []
+		else: tasks = [Task.query.get(task_id) for task_id in form.tasks.data]
+		contest = Contest.query.get(contest_id)
+		contest.set_tasks(tasks)
+		contest.save()
+		return redirect(url_for('contest', contest_id=contest.contest_id))
+	
+	return render_template('invite_form.html', form=form)
 
 
 @app.route('/search/<search_query>')

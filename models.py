@@ -98,12 +98,11 @@ class Contest(db.Model):
 	tasks = db.relationship('Task', secondary=contest_tasks, lazy='dynamic')
 	users = db.relationship('User', secondary=contest_users, lazy='dynamic')
 
-	def __init__(self, name, start, duration, author_id, tasks):
+	def __init__(self, name, start, duration, author_id):
 		self.name = name
 		self.start = start
 		self.duration = duration
 		self.author_id = author_id
-		self.tasks = tasks
 
 	def __repr__(self):
 		return 'Contest(%r)' % (self.name)
@@ -111,3 +110,6 @@ class Contest(db.Model):
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
+
+	def set_tasks(self, tasks):
+		self.tasks = tasks
