@@ -5,8 +5,8 @@
 {% block content %}
 
 <div class="row">
-	<div class="col-md-1"></div>
-    <div class="col-md-6">
+    <div class="col-md-1"></div>
+    <div class="col-md-5">
         <div class="well">
 			<form class="form-horizontal" method="post">
 				<fieldset>
@@ -29,13 +29,16 @@
 			    </fieldset>
             </form>
 		</div>
+        * TextArea uses MathJax LaTex syntax. Find out more <a href="https://www.mathjax.org/" target="_blank">here</a>.
     </div>
     <div class="col-md-5">
-        <p>Preview is shown here:</p>
-        <div id="MathPreview" style="border:1px solid; padding: 3px; width:50%; margin-top:5px"></div>
-        <div id="MathBuffer" style="border:1px solid; padding: 3px; width:50%; margin-top:5px; 
-            visibility:hidden; position:absolute; top:0; left: 0"></div>
+        <p>Preview of task text is shown here:</p>
+        <div class="well">
+            <div id="MathPreview"></div>
+            <div id="MathBuffer"></div>
+        </div>
     </div>
+    <div class="col-md-1"></div>
 </div>
 
 {% endblock %}

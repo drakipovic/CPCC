@@ -14,3 +14,9 @@ tr{
     cursor: pointer;
 }
 
+form textarea#text {
+    height: 400px;
+    max-width: 600px;
+}
+
+
