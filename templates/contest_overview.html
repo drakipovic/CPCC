@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="well">
+                <legend><h1>
+                {{contest.name}}
+                {% if can_edit %}
+                    <div style="float: right">
+                        <a class="btn btn-danger" href="{{contest.contest_id}}/edit" role="button">
+                         Edit contest <span class="glyphicon glyphicon-edit"></span></a>
+                        <a class="btn btn-danger" href="{{contest.contest_id}}/select_tasks" role="button"> 
+                         Add tasks <span class="glyphicon glyphicon-plus"></span></a>  
+                        <a class="btn btn-danger" href="{{contest.contest_id}}/invite" role="button"> 
+                         Invite friends <span class="glyphicon glyphicon-user"></span></a>
+                    </div>
+                {% elif can_contest_start %}
+                    <div style="float: right">
+                        <a class="btn btn-danger" href="{{contest.name}}" role="button">
+                         Enter contest <span class="glyphicon glyphicon-share-alt"></span></a>
+                    </div>
+                {% endif %}
+                </h1></legend>
+                <strong><h4>Contest info</h4></strong>
+                <p>Start: {{contest.start}}</p>
+                <p>Duration: {{contest.duration}} h</p>
+                <hr>
+                Author: <a href="/profile/{{author.username}}">{{author.username}}</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            {% if can_edit %}
+                <div class="row">
+                    <div class="well">
+                        <legend><h2>
+                            Tasks
+                        </h2></legend>
+                        <table class="table table-bordered table-hover" style="background: white">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in contest.tasks %}
+                                    <tr data-href="/task/{{task.task_id}}">
+                                        <td>{{task.name}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="well">
+                    <legend><h2>
+                        Users invited
+                    </h2></legend>
+                    <table class="table table-bordered table-hover" style="background: white">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in contest.users %}
+                                <tr>
+                                    <td><a href="/profile/{{user.username}}">{{user.username}}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

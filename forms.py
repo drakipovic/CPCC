@@ -1,6 +1,9 @@
 import pycountry
-from wtforms import Form, TextAreaField, TextField, validators, DateTimeField, IntegerField, SelectMultipleField, SelectField, PasswordField
+from wtforms import TextAreaField, TextField, validators, DateTimeField, IntegerField, SelectMultipleField, SelectField, PasswordField
+from flask_wtf.file import FileField, FileRequired
+from flask.ext.wtf import Form
 from models import Task
+
 
 class MemberForm(Form):
 	username = TextField('Username', [validators.Required()])
@@ -24,6 +27,10 @@ class ContestForm(Form):
 
 class SelectTasksForm(Form):
 	tasks = SelectMultipleField('Tasks', coerce=int)
+
+
+class SourceCodeSubmitForm(Form):
+    source_code = FileField('SourceCode', validators=[FileRequired()])
 
 
 class InviteForm(Form):

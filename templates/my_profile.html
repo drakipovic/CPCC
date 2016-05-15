@@ -10,7 +10,7 @@
 				{% for task in tasks %}
 					<p><a href="task/{{task.task_id}}">{{task.name}}</a></p>
 				{% endfor %}
-				<a class="btn btn-warning" href="/task/new" role="button">
+				<a class="btn btn-danger" href="/task/new" role="button">
 					Task <span class="glyphicon glyphicon-plus"></span>
 				</a>
 			</div>
@@ -21,7 +21,7 @@
 				{% for contest in contests %}
 					<p><a href="contest/{{contest.contest_id}}">{{contest.name}}</a></p>
 				{% endfor %}
-				<a class="btn btn-warning" href="/contest/new" role="button">
+				<a class="btn btn-danger" href="/contest/new" role="button">
 					Contest <span class="glyphicon glyphicon-plus"></span>
 				</a>
 			</div>

@@ -1,0 +1,16 @@
+body{
+    background: #EEEEEE;
+}
+
+.well{
+    background-color: white;
+}
+
+th{
+    background-color: #EEEEEE;
+}
+
+tr{
+    cursor: pointer;
+}
+

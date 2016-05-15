@@ -6,9 +6,9 @@
 					<span title="{{country}}" id="flag" class="img-rounded flag-icon flag-icon-{{country_code}}"></span> 
 					 {{other_user.name}} {{other_user.surname}}
 					{% if is_friend %}
-						<span class="label label-warning" style="float: right; font-size: 18px">Friends</span>
+						<span class="label label-danger" style="float: right; font-size: 18px">Friends</span>
 					{% else %}
-						<a class="btn btn-warning" href="/add_friend/{{other_user.user_id}}" role="button" style="float: right">
+						<a class="btn btn-danger" href="/add_friend/{{other_user.user_id}}" role="button" style="float: right">
 						Add friend <span class="glyphicon glyphicon-plus"></span></a>
 					{% endif %}
 				</h1></legend>
@@ -25,7 +25,7 @@
 		</div>
 	</div>
 	<div class="col-md-4">
-		<div class="panel panel-warning">
+		<div class="panel panel-danger">
 				<div class="panel-heading">
 					<h3 class="panel-title">Friends</h3>
 				</div>

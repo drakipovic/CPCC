@@ -4,10 +4,9 @@
 <div class="container">
     <div class="well">
     	<legend>Invited to contests</legend>
-    	<table class="table table-striped table-hover" style="background: white">
+    	<table class="table table-hover table-bordered">
     		<thead>
         		<tr>
-        			<th>#</th>
         			<th>Name</th>
         			<th>Start</th>
         			<th>Duration</th>
@@ -17,8 +16,7 @@
         	</thead>
         	<tbody>
 		        {% for contest in contests %}
-		           	<tr>
-		                <td><a href="/contest/{{contest.contest_id}}">{{contest.contest_id}}</a></td>
+                    <tr data-href="/contest/{{contest.contest_id}}">
 		                <td>{{contest.name}}</td>
 		                <td>{{contest.start}}</td>
 		                <td>{{contest.duration}}h</td>

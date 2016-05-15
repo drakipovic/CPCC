@@ -1,18 +1,34 @@
 {% extends 'base.html' %}
+{% from '_formhelpers.html' import render_field %}
 
 {% block content %}
 <div class="container">
-	<div class="well">
-		<legend><h1>
-			{{task.name}}
-			{% if user.user_id == task.author.user_id %}
-				<a class="btn btn-warning" href="{{task.task_id}}/edit" role="button" style="float: right">
-					Edit <span class="glyphicon glyphicon-edit"></span></a>
-			{% endif %}
-		</h1></legend>
-		{{task.text}}
+    <div class="row">
+        <div class="col-md-7">
+            <div class="well">
+                <legend><h1>
+                    {{task.name}}
+                    {% if user.user_id == task.author.user_id %}
+                        <a class="btn btn-danger" href="{{task.task_id}}/edit" role="button" style="float: right">
+                            Edit <span class="glyphicon glyphicon-edit"></span></a>
+                    {% endif %}
+                </h1></legend>
+                {{task.text}}
 
-		<h4>Author: <a href="/profile/{{task.author.username}}">{{task.author.username}}</a></h4>
-	</div>
+                <h4>Author: <a href="/profile/{{task.author.username}}">{{task.author.username}}</a></h4>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="well">
+                <form method="post" enctype="multipart/form-data">
+                    <legend>Submit your solution</legend>
+                    {{ form.hidden_tag() }}
+                    <p> {{form.source_code}} </p>
+                
+                    <center><button type="submit" class="btn btn-info">Submit</button></center>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

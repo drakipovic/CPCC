@@ -5,7 +5,7 @@
             {{ field(class_="form-control") }}
             {% if field.errors %}
                     {% for error in field.errors %}
-                        <li>{{ error }}</li>
+                        <li><font color="red">{{ error }}</font></li>
                     {% endfor %}
             {% endif %}
         </div>

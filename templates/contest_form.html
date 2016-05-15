@@ -14,7 +14,8 @@
     			            <legend>Create new contest</legend>
                         {% endif %}
                         
-    				    {% for field in form %}
+                        {{ form.hidden_tag() }}                        
+    				    {% for field in form if field.id != 'csrf_token' %}
     				        {{ render_field(field) }}
     				    {% endfor %}
       				    <div class="form-group">
