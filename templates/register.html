@@ -12,7 +12,8 @@
             <form class="form-horizontal" method="post">
                 <legend>Register</legend>
                 <fieldset>
-                    {% for field in form %}
+                    {{ form.hidden_tag() }}
+                    {% for field in form if field.id != 'csrf_token' %}
                         {{ render_field(field) }}
                     {% endfor %}
                     <div class="form-group">

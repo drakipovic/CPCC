@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="well">
+    	<legend>My submission queue</legend>
+    	<table class="table table-hover table-bordered">
+    		<thead>
+        		<tr>
+        			<th>Date</th>
+        			<th>Task</th>
+        			<th>Status</th>
+        			<th>Language</th>
+        		</tr>
+        	</thead>
+        	<tbody>
+		        {% for submission in submissions %}
+                    <tr>
+		                <td>{{submission.timestamp.strftime('%d-%m-%Y %H:%M:%S')}}</td>
+                        <td><a href='/task/{{submission.task_id}}'>{{submission.task_name}}</a></td>
+                        {% if submission.status == 'Accepted' %}
+                            <td style="color: green"><span class="glyphicon glyphicon-ok"></span> {{submission.status}}</td>
+                        {% else %}
+                            <td style="color: red"><span class="glyphicon glyphicon-remove"></span> {{submission.status}}</td>
+                        {% endif %}
+                        <td>{{submission.language}}</td>
+		            </tr>
+		        {% endfor %}
+			</tbody>
+		</table>
+    </div>
+</div>
+
+{% endblock %}

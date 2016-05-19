@@ -12,23 +12,30 @@
                         <a class="btn btn-danger" href="{{task.task_id}}/edit" role="button" style="float: right">
                             Edit <span class="glyphicon glyphicon-edit"></span></a>
                     {% endif %}
+                    <hr>
+                    <h5>Author: <a href="/profile/{{task.author.username}}">{{task.author.username}}</a></h5>
+                    <h5>Timelimit: 5s</h5>
+                    <h5>Memory: 1000 Mb</h5>
+                    <hr>
                 </h1></legend>
                 {{task.text}}
 
-                <h4>Author: <a href="/profile/{{task.author.username}}">{{task.author.username}}</a></h4>
             </div>
         </div>
-        <div class="col-md-5">
-            <div class="well">
-                <form method="post" enctype="multipart/form-data">
-                    <legend>Submit your solution</legend>
-                    {{ form.hidden_tag() }}
-                    <p> {{form.source_code}} </p>
-                
-                    <center><button type="submit" class="btn btn-info">Submit</button></center>
-                </form>
+        {% if can_submit %}
+            <div class="col-md-5">
+                <div class="well">
+                    <form method="post" enctype="multipart/form-data">
+                        <legend>Submit your solution</legend>
+                        {{ form.hidden_tag() }}
+                        <p> {{form.source_code}} </p>
+                    
+                        <center><button type="submit" class="btn btn-info">Submit <span class="glyphicon glyphicon-download-alt"></span>
+                        </button></center>
+                    </form>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

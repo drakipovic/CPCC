@@ -1,13 +1,15 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from werkzeug import secure_filename
 from flask import render_template, session, request, redirect, g, url_for, flash
 import pycountry
 
-from main import app
-from models import User, Task, Contest, Friendship
+from main import app, basedir
+from models import User, Task, Contest, Friendship, Submission
 from forms import TaskForm, ContestForm, MemberForm, InviteForm, SelectTasksForm, SourceCodeSubmitForm
-from evaluator import DEST_FOLDER, evaluate
+from evaluator import evaluate
+
+DEST_FOLDER = basedir + '/contest_source_code/'
 
 @app.before_request
 def _before_request():
@@ -152,9 +154,9 @@ def task(task_id):
         filename = secure_filename(form.source_code.data.filename)
         form.source_code.data.save(DEST_FOLDER + filename)
         flash('You succesfully submited your source code!', 'success')
-        evaluate.delay(form.source_code.data.filename)
+        evaluate.delay(filename, g.user.user_id, task)
 
-    return render_template('task.html', user=g.user, task=task, form=form)
+    return render_template('task.html', user=g.user, task=task, form=form, can_submit=False)
 
 
 @app.route('/task/<int:task_id>/edit', methods=['GET', 'POST'])
@@ -198,15 +200,47 @@ def contest_overview(contest_id):
     contest = Contest.query.get(contest_id)
     author = User.query.get(contest.author_id)
     can_edit = g.user == author
-    can_contest_start = contest.start < datetime.utcnow()
+    can_contest_start = contest.start < datetime.utcnow() + timedelta(hours=2)
     return render_template('contest_overview.html', contest=contest, user=g.user, author=author, can_edit=can_edit,
                                                                         can_contest_start=can_contest_start)
 
-@app.route('/contest/<name>')
-def contest(name):
-    contest = Contest.query.filter_by(name=name).first()
+@app.route('/contest/<int:contest_id>/overview')
+def contest(contest_id):
+    contest = Contest.query.get(contest_id)
     tasks = contest.tasks
-    return render_template('contest.html')
+     
+    contest_started = contest.start < datetime.utcnow() + timedelta(hours=2)
+    if not contest_started: return redirect('/profile')
+
+    contest_running = contest.start < datetime.utcnow() + timedelta(hours=2) and datetime.utcnow() + timedelta(hours=2) < contest.start + timedelta(hours=contest.duration) 
+    if contest_running: flash('Contest is running.', 'success')
+   
+    contest_ended = datetime.utcnow() + timedelta(hours=2) > contest.start + timedelta(hours=contest.duration) 
+    
+    submissions = Submission.query.filter_by(user_id=g.user.user_id, contest_id=contest.contest_id).all()
+    return render_template('contest.html', tasks=tasks, contest=contest, contest_ended=contest_ended, submissions=submissions)
+
+
+@app.route('/contest/<int:contest_id>/task/<int:task_id>', methods=['GET', 'POST'])
+def contest_task(contest_id, task_id):
+    task = Task.query.get(task_id)
+    contest = Contest.query.get(contest_id)
+    if g.user not in contest.users or contest.start > datetime.utcnow() + timedelta(hours=2):
+        flash('You are not a part of this contest or contest has not started yet.', 'danger')
+        return redirect('/profile')
+
+    can_submit = contest.start < datetime.utcnow() + timedelta(hours=2) and datetime.utcnow() + timedelta(hours=2) < contest.start + timedelta(hours=contest.duration) 
+    if not can_submit: return redirect('/task/' + str(task.task_id))
+
+    form = SourceCodeSubmitForm()
+    if form.validate() and request.method == 'POST':
+        filename = secure_filename(form.source_code.data.filename)
+        form.source_code.data.save(DEST_FOLDER + filename)
+        flash('You succesfully submited your source code!', 'success')
+        evaluate.delay(filename, g.user.user_id, task, contest)
+
+    return render_template('task.html', user=g.user, task=task, form=form, can_submit=can_submit)
+     
 
 @app.route('/contest/<int:contest_id>/invite', methods=['GET', 'POST'])
 def contest_invite(contest_id):
@@ -274,6 +308,11 @@ def search(search_query):
     contests = Contest.query.filter(Contest.name.contains(search_query)).all()
     return render_template('search_results.html', tasks=tasks, users=users, contests=contests)
 
+
+@app.route('/submissions')
+def submissions():
+    submissions = Submission.query.filter_by(user_id=g.user.user_id).all()
+    return render_template('submissions.html', submissions=submissions)
 
 @app.route('/logout', methods=['GET'])
 def logout():

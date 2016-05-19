@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<title>3C</title>
+<title>Penguin</title>
 
 <head>
 	<meta charset="utf-8">
@@ -27,12 +27,13 @@
     	<div class="container-fluid">
         	<div class="navbar-header">
           		<a class="navbar-brand" href="/home" style="font-weight: bold">
-          		<span style="font-size: 1.2em">3C</span></img></a>
+          		<span style="font-size: 1.2em">Penguin</span></img></a>
         	</div>
         	<div id="navbar" class="navbar-collapse collapse">
         		<ul class="nav navbar-nav">
             		<li id="profile"><a href="/profile">Profile</a></li>
             		<li id="compete"><a href="/compete">Compete</a></li>
+                    <li id="submissions"><a href="/submissions">Submissions</a></li>
             		<li id="about"><a href="/about">About</a></li>
           		</ul>
           		<form id="search" class="navbar-form navbar-left" role="search" action="/search">
@@ -55,7 +56,8 @@
 		            {% if messages %}
 		                {% for category, message in messages %}
 		                    <div class="alert alert-{{ category }}" style="text-align: center;">
-		                    	{{ message }}
+                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
+                                {{ message | safe }}
 		                    </div>
 		                {% endfor %}
             		{% endif %}

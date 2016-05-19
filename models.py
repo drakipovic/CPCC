@@ -1,8 +1,7 @@
 from main import db
 
-contest_users = db.Table('contest_users', 
-											db.Column('contest_id', db.Integer, db.ForeignKey('contests.contest_id'), primary_key=True),
-											db.Column('user_id', db.Integer, db.ForeignKey('users.user_id'), primary_key=True)
+contest_users = db.Table('contest_user', db.Column('contest_id', db.Integer, db.ForeignKey('contests.contest_id'), primary_key=True),
+                                            db.Column('user_id', db.Integer, db.ForeignKey('users.user_id'), primary_key=True)
 )
 
 
@@ -113,3 +112,33 @@ class Contest(db.Model):
 
 	def set_tasks(self, tasks):
 		self.tasks = tasks
+        
+
+class Submission(db.Model):
+    __tablename__ = 'submissions'
+
+    submission_id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(50))
+    language = db.Column(db.String(30))
+    timestamp = db.Column(db.DateTime())
+    task_name = db.Column(db.String(50))
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.task_id'))
+    contest_id = db.Column(db.Integer, db.ForeignKey('contests.contest_id'))
+
+    def __init__(self, status, language, timestamp, task_name, user_id, task_id, contest_id):
+        self.status = status
+        self.language = language
+        self.timestamp = timestamp
+        self.task_name = task_name
+        self.user_id = user_id
+        self.task_id = task_id
+        self.contest_id = contest_id
+
+    def __repr__(self):
+        return 'Submission {}'.format(submission_id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

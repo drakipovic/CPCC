@@ -18,16 +18,15 @@
                     </div>
                 {% elif can_contest_start %}
                     <div style="float: right">
-                        <a class="btn btn-danger" href="{{contest.name}}" role="button">
+                        <a class="btn btn-danger" href="{{contest.contest_id}}/overview" role="button">
                          Enter contest <span class="glyphicon glyphicon-share-alt"></span></a>
                     </div>
                 {% endif %}
                 </h1></legend>
-                <strong><h4>Contest info</h4></strong>
                 <p>Start: {{contest.start}}</p>
                 <p>Duration: {{contest.duration}} h</p>
+                <p>Author: <a href="/profile/{{author.username}}">{{author.username}}</a></p>
                 <hr>
-                Author: <a href="/profile/{{author.username}}">{{author.username}}</a>
             </div>
         </div>
         <div class="col-md-4">

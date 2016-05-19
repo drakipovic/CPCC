@@ -1,1 +1,60 @@
-Dobrodosao na natjecanje
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="col-md-6">
+        <div class="well">
+            <legend>Tasks</legend>
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        <tr data-href="/contest/{{contest.contest_id}}/task/{{task.task_id}}">
+                            <td>{{task.name}}</td>
+                            <td>1</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if contest_ended %}
+        <div class="col-md-6">
+            <div class="well">
+                <legend>Contest ended</legend>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-md-6">
+            <div class="well">
+                <legend>My submissions</legend>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for submission in submissions %}
+                            <tr>
+                                <td>{{submission.task_name}}</td>
+                                {% if submission.status == 'Accepted' %}
+                                    <td style="color: green"><span class="glyphicon glyphicon-ok"></span> {{submission.status}}</td>
+                                {% else %}
+                                    <td style="color: red"><span class="glyphicon glyphicon-remove"></span> {{submission.status}}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
