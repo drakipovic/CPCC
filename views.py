@@ -8,6 +8,7 @@ from main import app, basedir
 from models import User, Task, Contest, Friendship, Submission
 from forms import TaskForm, ContestForm, MemberForm, InviteForm, SelectTasksForm, SourceCodeSubmitForm
 from evaluator import evaluate
+from statistics import get_contest_statistics
 
 DEST_FOLDER = basedir + '/contest_source_code/'
 
@@ -201,8 +202,11 @@ def contest_overview(contest_id):
     author = User.query.get(contest.author_id)
     can_edit = g.user == author
     can_contest_start = contest.start < datetime.utcnow() + timedelta(hours=2)
+    submissions = Submission.query.filter_by(contest_id=contest.contest_id).all()
+    results = get_contest_statistics(submissions)
+    
     return render_template('contest_overview.html', contest=contest, user=g.user, author=author, can_edit=can_edit,
-                                                                        can_contest_start=can_contest_start)
+                                                                        can_contest_start=can_contest_start, results=results)
 
 @app.route('/contest/<int:contest_id>/overview')
 def contest(contest_id):
@@ -216,9 +220,15 @@ def contest(contest_id):
     if contest_running: flash('Contest is running.', 'success')
    
     contest_ended = datetime.utcnow() + timedelta(hours=2) > contest.start + timedelta(hours=contest.duration) 
-    
-    submissions = Submission.query.filter_by(user_id=g.user.user_id, contest_id=contest.contest_id).all()
-    return render_template('contest.html', tasks=tasks, contest=contest, contest_ended=contest_ended, submissions=submissions)
+    results=[]
+    submissions=[]
+
+    if contest_running: 
+        submissions = Submission.query.filter_by(user_id=g.user.user_id, contest_id=contest.contest_id).all()
+    elif contest_ended:
+        submissions = Submission.query.filter_by(contest_id=contest.contest_id).all()
+        results = get_contest_statistics(submissions)
+    return render_template('contest.html', tasks=tasks, contest=contest, contest_ended=contest_ended, submissions=submissions, results=results)
 
 
 @app.route('/contest/<int:contest_id>/task/<int:task_id>', methods=['GET', 'POST'])
@@ -239,7 +249,7 @@ def contest_task(contest_id, task_id):
         flash('You succesfully submited your source code!', 'success')
         evaluate.delay(filename, g.user.user_id, task, contest)
 
-    return render_template('task.html', user=g.user, task=task, form=form, can_submit=can_submit)
+    return render_template('task.html', user=g.user, contest_id=contest.contest_id, task=task, form=form, can_submit=can_submit)
      
 
 @app.route('/contest/<int:contest_id>/invite', methods=['GET', 'POST'])

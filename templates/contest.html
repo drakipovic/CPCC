@@ -27,6 +27,24 @@
         <div class="col-md-6">
             <div class="well">
                 <legend>Contest ended</legend>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Username</th>
+                            <th>Solved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in results %}
+                            <tr>
+                                <td>{{loop.index}}</td>
+                                <td>{{user[0]}}</td>
+                                <td>{{user[1]}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     {% else %}

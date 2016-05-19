@@ -3,11 +3,11 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <div class="well">
                 <legend><h1>
                 {{contest.name}}
-                {% if can_edit %}
+                {% if can_edit and not can_contest_start %}
                     <div style="float: right">
                         <a class="btn btn-danger" href="{{contest.contest_id}}/edit" role="button">
                          Edit contest <span class="glyphicon glyphicon-edit"></span></a>
@@ -16,7 +16,7 @@
                         <a class="btn btn-danger" href="{{contest.contest_id}}/invite" role="button"> 
                          Invite friends <span class="glyphicon glyphicon-user"></span></a>
                     </div>
-                {% elif can_contest_start %}
+                {% elif can_contest_start and not can_edit %}
                     <div style="float: right">
                         <a class="btn btn-danger" href="{{contest.contest_id}}/overview" role="button">
                          Enter contest <span class="glyphicon glyphicon-share-alt"></span></a>
@@ -27,9 +27,14 @@
                 <p>Duration: {{contest.duration}} h</p>
                 <p>Author: <a href="/profile/{{author.username}}">{{author.username}}</a></p>
                 <hr>
+                <h4> Users invited </h4>
+                <ul class="list-group">
+                    {% for user in contest.users %}
+                        <li class="list-group-item"><a href="/profile/{{user.username}}">{{user.username}}</a></li>
+                    {% endfor %}
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             {% if can_edit %}
                 <div class="row">
                     <div class="well">
@@ -53,21 +58,27 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="row">
+        </div>
+    </div>
+    {% if can_edit and can_contest_start %}
+        <div class="row">
+            <div class="col-md-9">
                 <div class="well">
-                    <legend><h2>
-                        Users invited
-                    </h2></legend>
-                    <table class="table table-bordered table-hover" style="background: white">
+                    <legend>Results</legend>
+                    <table class="table table-hover table-bordered">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>#</th>
+                                <th>Username</th>
+                                <th>Solved</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for user in contest.users %}
+                            {% for user in results %}
                                 <tr>
-                                    <td><a href="/profile/{{user.username}}">{{user.username}}</a></td>
+                                    <td>{{loop.index}}</td>
+                                    <td>{{user[0]}}</td>
+                                    <td>{{user[1]}}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -75,6 +86,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 </div>
 {% endblock %}

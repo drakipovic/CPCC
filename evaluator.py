@@ -41,10 +41,10 @@ def evaluate(source_code_name, user_id, task, contest):
     for input_file in os.listdir(INPUT_FOLDER + str(task_id)):
         user_output = subprocess.check_output(DEST_FOLDER + source_code_name + "< " + INPUT_FOLDER  + str(task_id) + '/' + input_file, shell=True)
         input_num = input_file.split('_')[1].split('.')[0]
-
         with open(OUTPUT_FOLDER + str(task_id) + '/' + 'output_' + input_num + '.txt') as f:
-            output = f.readline()
-            print output        
+            output = f.readline().strip()
+        
+        print 'output {} - user_output {}'.format(output, user_output)        
         status = user_output == output        
     
     accepted = 'Accepted' if status else 'Wrong Answer'
