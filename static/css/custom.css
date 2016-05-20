@@ -18,3 +18,7 @@ form textarea#text {
     height: 400px;
     max-width: 600px;
 }
+
+pre {
+    display: inline-block;
+}
