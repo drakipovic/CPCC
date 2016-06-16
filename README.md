@@ -1,2 +1,1 @@
-# CPCC
-Competitive Programming Contest Creator
+# Penguin
