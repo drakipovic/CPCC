@@ -2,77 +2,126 @@
 
 {% block content %}
 <div class="container">
-    <div class="col-md-6">
-        <div class="well">
-            <legend>Tasks</legend>
-            <table class="table table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for task in tasks %}
-                        <tr data-href="/contest/{{contest.contest_id}}/task/{{task.task_id}}">
-                            <td>{{task.name}}</td>
-                            <td>1</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="row">
+        <div class="col-md-5 col-md-offset-7">
+            <div class="well">
+                <h1 id="time">
+                    {% if contest.duration < 10 %}
+                      Time left: 0{{contest.duration}}:00:00
+                    {% else %}
+                      Time left: {{contest.duration}}:00:00
+                    {% endif %}
+                </h1>
+            </div>
         </div>
+        <div class="col-md-6">
+            <div class="well">
+                <legend>Tasks</legend>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                            <tr data-href="/contest/{{contest.contest_id}}/task/{{task.task_id}}">
+                                <td>{{task.name}}</td>
+                                <td>1</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if contest_ended %}
+            <div class="col-md-6">
+                <div class="well">
+                    <legend>Contest ended</legend>
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Username</th>
+                                <th>Solved</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in results %}
+                                <tr>
+                                    <td>{{loop.index}}</td>
+                                    <td>{{user[0]}}</td>
+                                    <td>{{user[1]}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-6">
+                <div class="well">
+                    <legend>My submissions</legend>
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in submissions %}
+                                <tr>
+                                    <td>{{submission.task_name}}</td>
+                                    {% if submission.status == 'Accepted' %}
+                                        <td style="color: green"><span class="glyphicon glyphicon-ok"></span> {{submission.status}}</td>
+                                    {% else %}
+                                        <td style="color: red"><span class="glyphicon glyphicon-remove"></span> {{submission.status}}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
     </div>
-    {% if contest_ended %}
-        <div class="col-md-6">
-            <div class="well">
-                <legend>Contest ended</legend>
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Username</th>
-                            <th>Solved</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in results %}
-                            <tr>
-                                <td>{{loop.index}}</td>
-                                <td>{{user[0]}}</td>
-                                <td>{{user[1]}}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {% else %}
-        <div class="col-md-6">
-            <div class="well">
-                <legend>My submissions</legend>
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Task</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for submission in submissions %}
-                            <tr>
-                                <td>{{submission.task_name}}</td>
-                                {% if submission.status == 'Accepted' %}
-                                    <td style="color: green"><span class="glyphicon glyphicon-ok"></span> {{submission.status}}</td>
-                                {% else %}
-                                    <td style="color: red"><span class="glyphicon glyphicon-remove"></span> {{submission.status}}</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {% endif %}
 </div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+function startTimer(duration, display) {
+    var start = new Date("{{contest.start}}"), diff, hours, minutes, seconds;
+
+    function timer(){
+        
+        diff = duration - (((Date.now() - start) / 1000) | 0);
+                
+        hours = parseInt(diff / (60 * 60), 10)
+        minutes = parseInt(diff / 60, 10)
+        seconds = parseInt(diff % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        hours = hours < 10 ? "0" + hours : hours;
+
+        display.textContent = "Time left: " + hours + ":" + minutes + ":" + seconds;
+
+        if (diff <= 0) {
+            display.textContent = "Contest ended";
+        }
+    };
+    timer();
+    setInterval(timer, 1000);
+}
+</script>
+<script>
+window.onload = function(){
+    var duration = "{{contest.duration}}" * 60 * 60,
+       display = document.querySelector('#time');
+    startTimer(duration, display);
+};
+</script>
 {% endblock %}

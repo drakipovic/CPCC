@@ -1,16 +1,17 @@
 from datetime import datetime, timedelta
+import os
 
 from werkzeug import secure_filename
 from flask import render_template, session, request, redirect, g, url_for, flash
 import pycountry
+import zipfile
 
 from main import app, basedir
 from models import User, Task, Contest, Friendship, Submission
 from forms import TaskForm, ContestForm, MemberForm, InviteForm, SelectTasksForm, SourceCodeSubmitForm
-from evaluator import evaluate
+from evaluator import evaluate, DEST_FOLDER, INPUT_FOLDER, OUTPUT_FOLDER, get_extension
 from statistics import get_contest_statistics
 
-DEST_FOLDER = basedir + '/contest_source_code/'
 
 @app.before_request
 def _before_request():
@@ -58,7 +59,16 @@ def profile():
 @app.route('/compete')
 def compete(): 
     contests = [Contest.query.get(contest.contest_id) for contest in g.user.contests]
-    return render_template('compete.html', contests=contests)
+    past_contests = []
+    future_contests = []
+
+    for contest in contests:
+        if contest.start < datetime.utcnow() + timedelta(hours=2):
+            past_contests.append(contest)
+        else:
+            future_contests.append(contest)
+
+    return render_template('compete.html', past_contests=past_contests, future_contests=future_contests)
 
 
 @app.route('/profile/<username>')
@@ -191,6 +201,7 @@ def new_contest():
     if request.method == 'POST' and form.validate():
         contest = Contest(form.name.data, form.start.data, form.duration.data, g.user.user_id)
         contest.save()
+        os.makedirs(DEST_FOLDER.format(contest.contest_id)) 
         return redirect(url_for('contest_overview', contest_id=contest.contest_id))
     
     return render_template('contest_form.html', form=form)
@@ -204,7 +215,7 @@ def contest_overview(contest_id):
     can_contest_start = contest.start < datetime.utcnow() + timedelta(hours=2)
     submissions = Submission.query.filter_by(contest_id=contest.contest_id).all()
     results = get_contest_statistics(submissions)
-    
+     
     return render_template('contest_overview.html', contest=contest, user=g.user, author=author, can_edit=can_edit,
                                                                         can_contest_start=can_contest_start, results=results)
 
@@ -217,7 +228,7 @@ def contest(contest_id):
     if not contest_started: return redirect('/profile')
 
     contest_running = contest.start < datetime.utcnow() + timedelta(hours=2) and datetime.utcnow() + timedelta(hours=2) < contest.start + timedelta(hours=contest.duration) 
-    if contest_running: flash('Contest is running.', 'success')
+    #if contest_running: flash('Contest is running.', 'success')
    
     contest_ended = datetime.utcnow() + timedelta(hours=2) > contest.start + timedelta(hours=contest.duration) 
     results=[]
@@ -245,7 +256,7 @@ def contest_task(contest_id, task_id):
     form = SourceCodeSubmitForm()
     if form.validate() and request.method == 'POST':
         filename = secure_filename(form.source_code.data.filename)
-        form.source_code.data.save(DEST_FOLDER + filename)
+        form.source_code.data.save(DEST_FOLDER.format(contest_id, task_id) + filename)
         flash('You succesfully submited your source code!', 'success')
         evaluate.delay(filename, g.user.user_id, task, contest)
 
@@ -275,6 +286,36 @@ def contest_invite(contest_id):
 
     return render_template('invite_form.html', form=form, edit=True)
 
+@app.route('/contest/<int:contest_id>/upload', methods=['POST'])
+def upload_test_cases(contest_id):
+    if not 'input' in request.files and not 'output' in request.files: 
+        return redirect('/contest/' + str(contest_id))
+    
+    input_file = request.files['input']
+    output_file = request.files['output']
+    task_id = request.form['tasks']
+
+    if input_file:
+        filename = secure_filename(input_file.filename)
+        if get_extension(filename) != 'zip':
+            return redirect('/contest/' + str(contest_id))
+
+        input_file.save(INPUT_FOLDER.format(contest_id, task_id) + filename)
+        zip_ref = zipfile.ZipFile(INPUT_FOLDER.format(contest_id, task_id) + filename, 'r')
+        zip_ref.extractall(INPUT_FOLDER.format(contest_id, task_id))
+        zip_ref.close()
+
+    if output_file:
+        filename = secure_filename(output_file.filename)
+        if get_extension(filename) != 'zip':
+            return redirect('/contest/' + str(contest_id))
+
+        output_file.save(OUTPUT_FOLDER.format(contest_id, task_id) + filename)
+        zip_ref = zipfile.ZipFile(OUTPUT_FOLDER.format(contest_id, task_id) + filename, 'r')
+        zip_ref.extractall(OUTPUT_FOLDER.format(contest_id, task_id))
+        zip_ref.close()
+
+    return redirect('/contest/' + str(contest_id))
 
 @app.route('/contest/<int:contest_id>/edit', methods=['GET', 'POST'])
 def edit_contest(contest_id):
@@ -306,6 +347,10 @@ def select_tasks(contest_id):
         contest = Contest.query.get(contest_id)
         contest.set_tasks(tasks)
         contest.save()
+        for task in tasks:
+            os.makedirs(INPUT_FOLDER.format(contest_id, task.task_id))
+            os.makedirs(OUTPUT_FOLDER.format(contest_id, task.task_id))
+
         return redirect(url_for('contest_overview', contest_id=contest.contest_id))
     
     return render_template('invite_form.html', form=form)

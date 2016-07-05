@@ -3,25 +3,30 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-8">
             <div class="well">
                 <legend><h1>
-                {{contest.name}}
-                {% if can_edit and not can_contest_start %}
-                    <div style="float: right">
-                        <a class="btn btn-danger" href="{{contest.contest_id}}/edit" role="button">
-                         Edit contest <span class="glyphicon glyphicon-edit"></span></a>
-                        <a class="btn btn-danger" href="{{contest.contest_id}}/select_tasks" role="button"> 
-                         Add tasks <span class="glyphicon glyphicon-plus"></span></a>  
-                        <a class="btn btn-danger" href="{{contest.contest_id}}/invite" role="button"> 
-                         Invite friends <span class="glyphicon glyphicon-user"></span></a>
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        {{contest.name}}
                     </div>
-                {% elif can_contest_start and not can_edit %}
-                    <div style="float: right">
-                        <a class="btn btn-danger" href="{{contest.contest_id}}/overview" role="button">
-                         Enter contest <span class="glyphicon glyphicon-share-alt"></span></a>
+                    <div class="col-sm-8 col-md-8 col-lg-8">
+                        {% if can_edit and not can_contest_start %}
+                            <div style="float: right">
+                                <a class="btn btn-danger" href="{{contest.contest_id}}/edit" role="button">
+                                 Edit contest <span class="glyphicon glyphicon-edit"></span></a>
+                                <a class="btn btn-danger" href="{{contest.contest_id}}/select_tasks" role="button"> 
+                                 Add tasks <span class="glyphicon glyphicon-plus"></span></a>  
+                                <a class="btn btn-danger" href="{{contest.contest_id}}/invite" role="button"> 
+                                 Invite friends <span class="glyphicon glyphicon-user"></span></a>
+                            </div>
+                        {% elif can_contest_start and not can_edit %}
+                            <div style="float: right">
+                                <a class="btn btn-danger" href="{{contest.contest_id}}/overview" role="button">
+                                 Enter contest <span class="glyphicon glyphicon-share-alt"></span></a>
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
                 </h1></legend>
                 <p>Start: {{contest.start}}</p>
                 <p>Duration: {{contest.duration}} h</p>
@@ -34,23 +39,29 @@
                     {% endfor %}
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             {% if can_edit %}
                 <div class="row">
                     <div class="well">
                         <legend><h2>
                             Tasks
+                            <div style="float: right">
+                                <a class="btn btn-danger" data-toggle="modal" data-target="#uploadTestCasesModal"> 
+                                 Upload Test Cases <span class="glyphicon glyphicon-upload"></span></a>
+                            </div>
                         </h2></legend>
                         <table class="table table-bordered table-hover" style="background: white">
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Test Cases</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for task in contest.tasks %}
-                                    <tr data-href="/task/{{task.task_id}}">
+                                    <tr>
                                         <td>{{task.name}}</td>
+                                        <td>Yes</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -87,5 +98,43 @@
             </div>
         </div>
     {% endif %}
+</div>
+<form action="/contest/{{contest.contest_id}}/upload" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="69fd195e193343135ee51b43d2518258">
+        <div class="modal fade" id="uploadTestCasesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Upload Test Cases</h4>
+                    </div>
+                <div class="modal-body">
+                    Select task<br>
+                    <select name="tasks">
+                        {% for task in contest.tasks %}
+                            <option value="{{task.task_id}}">{{task.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <hr>                    
+                    
+                    Input files
+                    <input type="file" name="input">
+                    <hr>
+                    Output files
+                    <input type="file" name="output">
+                    <hr>
+                    <div class="well" style="border:1px black solid">
+                        Both input and output files must be in zip!<br>
+                        Input zip must contain files with names <b>in_i.in</b> which is an input for test case i.<br> 
+                        Output zip must contain files with names <b>out_i.out</b> which is the correct output for test case i.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-info">Upload</button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 {% endblock %}

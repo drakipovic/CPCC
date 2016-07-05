@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
     <div class="well">
-    	<legend>Invited to contests</legend>
+    	<legend>Future contests</legend>
     	<table class="table table-hover table-bordered">
     		<thead>
         		<tr>
@@ -15,7 +15,32 @@
         		</tr>
         	</thead>
         	<tbody>
-		        {% for contest in contests %}
+		        {% for contest in future_contests %}
+                    <tr data-href="/contest/{{contest.contest_id}}">
+		                <td>{{contest.name}}</td>
+		                <td>{{contest.start}}</td>
+		                <td>{{contest.duration}}h</td>
+		                <td>{{contest.tasks.count()}}</td>
+		                <td>{{contest.users.count()}}</td>
+		            </tr>
+		        {% endfor %}
+			</tbody>
+		</table>
+    </div>
+    <div class="well">
+    	<legend>Past contests</legend>
+    	<table class="table table-hover table-bordered">
+    		<thead>
+        		<tr>
+        			<th>Name</th>
+        			<th>Start</th>
+        			<th>Duration</th>
+        			<th>Task number</th>
+        			<th>Invited users</th>
+        		</tr>
+        	</thead>
+        	<tbody>
+		        {% for contest in past_contests %}
                     <tr data-href="/contest/{{contest.contest_id}}">
 		                <td>{{contest.name}}</td>
 		                <td>{{contest.start}}</td>

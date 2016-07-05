@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 from datetime import datetime
 
@@ -8,10 +9,11 @@ import yaml
 from models import Submission
 
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-DEST_FOLDER = basedir + '/contest_source_code/'
-INPUT_FOLDER = basedir + '/input_files/task_'
-OUTPUT_FOLDER = basedir + '/output_files/task_'
+basedir = os.path.abspath(os.path.dirname(__file__)) + "/contests/"
+
+DEST_FOLDER = basedir + 'contest_{}/user_source/'
+INPUT_FOLDER = basedir + 'contest_{}/input_files/task_{}/'
+OUTPUT_FOLDER = basedir + 'contest_{}/output_files/task_{}/'
 celery = Celery('evaluator', broker='amqp://guest@localhost//')
 
 
@@ -32,19 +34,26 @@ def get_command(extension):
 def evaluate(source_code_name, user_id, task, contest):
     extension = get_extension(source_code_name)
     command = get_command(extension)
-    
-    os.system(command.format(DEST_FOLDER + source_code_name, DEST_FOLDER + remove_extension(source_code_name)))
+    contest_id = contest.contest_id
+
+    os.system(command.format(DEST_FOLDER.format(contest_id) + source_code_name, DEST_FOLDER.format(contest_id) + remove_extension(source_code_name)))
     source_code_name = remove_extension(source_code_name)
     task_id = task.task_id
     status = True
 
-    for input_file in os.listdir(INPUT_FOLDER + str(task_id)):
-        user_output = subprocess.check_output(DEST_FOLDER + source_code_name + "< " + INPUT_FOLDER  + str(task_id) + '/' + input_file, shell=True)
+    for input_file in os.listdir(INPUT_FOLDER.format(contest_id, task_id)):
+        if get_extension(input_file) == 'zip': continue
+        user_output = subprocess.check_output(DEST_FOLDER.format(contest_id) + source_code_name + "< " + INPUT_FOLDER.format(contest_id, task_id) + input_file, shell=True)
+        user_output = re.sub('[\s+]\\n', '\n', user_output)
+        user_output = user_output.strip()
         input_num = input_file.split('_')[1].split('.')[0]
-        with open(OUTPUT_FOLDER + str(task_id) + '/' + 'output_' + input_num + '.txt') as f:
-            output = f.readline().strip()
-        
-        print 'output {} - user_output {}'.format(output, user_output)        
+
+
+        with open(OUTPUT_FOLDER.format(contest_id, task_id) + 'out_' + input_num + '.out') as f:
+            output = f.read().strip()
+
+        print 'worker'
+        print 'output\n {} \n user_output\n {}'.format(output, user_output)        
         status = user_output == output        
     
     accepted = 'Accepted' if status else 'Wrong Answer'
