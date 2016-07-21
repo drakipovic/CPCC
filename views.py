@@ -109,10 +109,15 @@ def login():
     if request.method == 'POST':
         username = request.form['inputUsername']
         password = request.form['inputPassword']
-        user = User.query.filter_by(username=username, password=password).first()
+        user = User.query.filter_by(username=username).first()
+
         if user is None:
-            flash("Warning! Wrong username or password.", 'danger')
+            flash("No user found!", 'danger')
             return redirect('/login')
+
+        if not user.check_password(password):
+            flash('Wrong password, try again!', 'danger')
+        
         else:
             session['logged_in'] = username
             return redirect('/home')
@@ -149,7 +154,7 @@ def user_tasks(username):
 def new_task():
     form = TaskForm(request.form)
     if request.method == 'POST' and form.validate():
-        task = Task(form.name.data, form.text.data, g.user)
+        task = Task(form.name.data, form.text.data, form.memory.data, form.time_limit.data, g.user)
         task.save()
         return redirect(url_for('task', task_id=task.task_id))
 

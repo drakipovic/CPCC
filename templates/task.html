@@ -14,8 +14,8 @@
                     {% endif %}
                     <hr>
                     <h5>Author: <a href="/profile/{{task.author.username}}">{{task.author.username}}</a></h5>
-                    <h5>Timelimit: 5s</h5>
-                    <h5>Memory: 1000 Mb</h5>
+                    <h5>Timelimit: {{task.time_limit}} seconds</h5>
+                    <h5>Memory: {{task.memory}} MB</h5>
                     {% if can_submit %}
                         <h5><a href=/contest/{{contest_id}}/overview>Contest overview</a></h5>
                     {% endif %}
